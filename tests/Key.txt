@@ -1,0 +1,15 @@
+1.  One frame: success
+2.  RX_OVERSAMPLE_RATE = 17 short rx clock: success, correct data read out right near the end of RESET state when output cleared
+3.  RX_OVERSAMPLE_RATE = 13 lagging rx clock: fail xaction, bits way out of sync, incorrect data read out
+4.  Two frames: success, with second outputs shortened due to external reset
+5.  Two frames, RX_OVERSAMPLE_RATE = 17: success for first, fail xaction for second
+6.  Two frames, interrupted transmit followed by complete transmit: success (*shows tx start can come before en to start a transmit)
+7.  Two frames, interrupted transmit followed by complete transmit: success (*shows tx start can come before en and even during previous transmit)
+8.  Two frames, interrupted transmit followed by transmit attempt: fail to start second xaction due to tx start being too short after en
+9.  Two frames continuous (no low-going tx start): success (*shows third transmit starting, because low-going tx start is too late at end of second xaction)
+10. Two frames continuous (no low-going tx start): success (*shows acceptance of second transmit data (in) on high-going done)
+11. Two frames continuous (no low-going tx start): fail to set up new data (in) before high-going done in time for second transmit (*and shows third transmit starting, because low-going tx start is too late)
+12. Two frames continuous, TURBO_FRAMES = 1: success (*max bandwidth because data (in) is ready to transmit immediately when done signal goes low)
+13. 20 frames continuous, TURBO_FRAMES = 0: success
+14. 20 frames continuous, TURBO_FRAMES = 1: success
+15. 20 frames continuous, TURBO_FRAMES = 1: fail at bytes 99 (after 0) and 7 (after 149) because setup is not fast enough for the rate

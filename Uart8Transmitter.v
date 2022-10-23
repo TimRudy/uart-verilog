@@ -63,6 +63,7 @@ always @(posedge clk) begin
             busy      <= 1'b0;
             done      <= 1'b0;
             out       <= 1'b1; // line is high for IDLE state
+            bit_index <= 3'b0;
             if (en) begin
                 state <= `IDLE;
             end
@@ -94,13 +95,22 @@ always @(posedge clk) begin
         end
 
         `STOP_BIT: begin
-            done        <= 1'b1; // signal transmission stop (one clock cycle)
-            out         <= 1'b1; // transition to the mark state output (high)
-            if (TURBO_FRAMES && start) begin
-                in_data <= in; // register the input data
-                state   <= `START_BIT; // go straight to transmit
+            done              <= 1'b1; // signal transmission stop
+            out               <= 1'b1; // transition to mark state output (high)
+            if (start) begin
+                if (done == 1'b0) begin // this distinguishes 2 sub-states
+                    in_data   <= in; // register the input data
+                    if (TURBO_FRAMES) begin
+                        state <= `START_BIT; // go straight to transmit
+                    end else begin
+                        state <= `STOP_BIT; // keep mark state one extra cycle
+                    end
+                end else begin // there was extra cycle within this state
+                    done      <= 1'b0;
+                    state     <= `START_BIT; // now go to transmit
+                end
             end else begin
-                state   <= `RESET; // keep mark state (high) for one extra cycle
+                state         <= `RESET;
             end
         end
 

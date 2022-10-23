@@ -195,7 +195,13 @@ always @(posedge clk) begin
              *   {done} signal or the {err} signal
              */
             sample_count     <= sample_count + 4'b1;
-            if (&sample_count[3:1]) begin // reached 14 -
+            if (!err && !in_sample) begin
+                // accept the trigger to start, immediately following
+                // transmission stop
+                valid_count  <= sample_count;
+                sample_count <= 4'b0;
+                state        <= `IDLE;
+            end else if (&sample_count[3:1]) begin // reached 14 -
                 // additional tick 15 comes from transitting the READY state
                 // to the RESET state
                 state        <= `RESET;

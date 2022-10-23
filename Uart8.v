@@ -33,7 +33,7 @@ module Uart8 #(
 );
 
 // this value cannot be changed in the current implementation
-localparam RX_OVERSAMPLE_RATE = 16;
+parameter RX_OVERSAMPLE_RATE = 16;
 
 wire rxClk;
 wire txClk;
