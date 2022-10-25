@@ -29,8 +29,8 @@ module Uart8Receiver (
 
 reg [2:0] state         = `RESET;
 reg [2:0] bit_index     = 3'b0; // index for 8-bit data
-reg [1:0] in_shift_reg  = 2'b0; // shift reg for input signal conditioning
-reg [3:0] in_hold_reg   = 4'b0; // shift reg for stop signal hold time check
+reg [1:0] in_reg        = 2'b0; // shift reg for input signal conditioning
+reg [4:0] in_hold_reg   = 5'b0; // shift reg for signal hold time checks
 reg [3:0] sample_count  = 4'b0; // count ticks for 16x oversample
 reg [3:0] valid_count   = 4'b0; // count ticks before clearing output data
 reg [7:0] received_data = 8'b0; // storage for the deserialized data
@@ -45,10 +45,18 @@ wire in_sample;
  *   earlier, unconditioned signal {in} must be ignored
  */
 always @(posedge clk) begin
-    in_shift_reg <= { in_shift_reg[0], in };
+    in_reg <= { in_reg[0], in };
 end
 
-assign in_sample = in_shift_reg[1];
+assign in_sample = in_reg[1];
+
+/*
+ * Track the incoming data for 4 rx {clk} ticks + 1, to be able to enforce a
+ *   minimum hold time of 4 {clk} ticks for any rx signal
+ */
+always @(posedge clk) begin
+    in_hold_reg <= { in_hold_reg[3:0], in_sample };
+end
 
 /*
  * End the validity of output data after precise time of one serial bit cycle:
@@ -96,7 +104,8 @@ always @(posedge clk) begin
              *
              * Then start the count for the proceeding full baud intervals
              */
-            if (!in_sample) begin
+            if (!in_sample && (&in_hold_reg[4:1] || sample_count)) begin
+                // meets min previous high signal
                 sample_count     <= sample_count + 4'b1;
                 if (&sample_count[2:0]) begin // reached 7
                     busy         <= 1'b1;
@@ -156,8 +165,6 @@ always @(posedge clk) begin
              *   precisely in reality, accept the transition to handling the
              *   next start bit any time after the stop bit mid-point
              */
-            in_hold_reg <= { in_hold_reg[2:0], in_sample };
-
             sample_count              <= sample_count + 4'b1;
             if (sample_count[3]) begin // reached 8 to 15
                 // in the second half of the baud interval
@@ -165,7 +172,7 @@ always @(posedge clk) begin
                     // accept that transmission has completed only if the stop
                     // signal held for a time of >= 4 rx clocks before it
                     // changed to a start signal
-                    if (&in_hold_reg) begin
+                    if (&in_hold_reg[4:1]) begin // meets stop signal hold time
                         // can accept the transmitted data and output it
                         done          <= 1'b1;
                         out           <= received_data;
