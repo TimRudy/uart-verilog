@@ -27,28 +27,28 @@ module Uart8Receiver (
     output reg [7:0] out // received data
 );
 
-reg [2:0] state        = `RESET;
-reg [2:0] bitIndex     = 3'b0; // index for 8-bit data
-reg [1:0] inShiftReg   = 2'b0; // shift reg for input signal conditioning
-reg [3:0] inHoldReg    = 4'b0; // shift reg for stop signal hold time check
-reg [3:0] sampleCount  = 4'b0; // count ticks for 16x oversample
-reg [3:0] validCount   = 4'b0; // count ticks before clearing output data
-reg [7:0] receivedData = 8'b0; // storage for the deserialized data
-wire inSample;
+reg [2:0] state         = `RESET;
+reg [2:0] bit_index     = 3'b0; // index for 8-bit data
+reg [1:0] in_shift_reg  = 2'b0; // shift reg for input signal conditioning
+reg [3:0] in_hold_reg   = 4'b0; // shift reg for stop signal hold time check
+reg [3:0] sample_count  = 4'b0; // count ticks for 16x oversample
+reg [3:0] valid_count   = 4'b0; // count ticks before clearing output data
+reg [7:0] received_data = 8'b0; // storage for the deserialized data
+wire in_sample;
 
 /*
  * Double-register the incoming data:
  *
  * This prevents metastability problems crossing into rx clock domain
  *
- * After registering, only the {inSample} wire is to be accessed - the
+ * After registering, only the {in_sample} wire is to be accessed - the
  *   earlier, unconditioned signal {in} must be ignored
  */
 always @(posedge clk) begin
-    inShiftReg <= { inShiftReg[0], in };
+    in_shift_reg <= { in_shift_reg[0], in };
 end
 
-assign inSample = inShiftReg[1];
+assign in_sample = in_shift_reg[1];
 
 /*
  * End the validity of output data after precise time of one serial bit cycle:
@@ -61,10 +61,10 @@ assign inSample = inShiftReg[1];
  *   from STOP_BIT state
  */
 always @(posedge clk) begin
-    if (|validCount) begin
-        validCount <= validCount + 4'b1;
-        if (&validCount) begin // reached 15 - timed output interval ends
-            out    <= 8'b0;
+    if (|valid_count) begin
+        valid_count <= valid_count + 4'b1;
+        if (&valid_count) begin // reached 15 - timed output interval ends
+            out     <= 8'b0;
         end
     end
 end
@@ -76,14 +76,14 @@ always @(posedge clk) begin
 
     case (state)
         `RESET: begin
-            busy         <= 1'b0;
-            done         <= 1'b0;
-            err          <= 1'b0;
-            sampleCount  <= 4'b0;
-            receivedData <= 8'b0;
-            out          <= 8'b0;
+            busy          <= 1'b0;
+            done          <= 1'b0;
+            err           <= 1'b0;
+            sample_count  <= 4'b0;
+            received_data <= 8'b0;
+            out           <= 8'b0;
             if (en) begin
-                state    <= `IDLE;
+                state     <= `IDLE;
             end
         end
 
@@ -96,19 +96,19 @@ always @(posedge clk) begin
              *
              * Then start the count for the proceeding full baud intervals
              */
-            if (!inSample) begin
-                sampleCount     <= sampleCount + 4'b1;
-                if (&sampleCount[2:0]) begin // reached 7
-                    busy        <= 1'b1;
-                    done        <= 1'b0;
-                    err         <= 1'b0;
-                    sampleCount <= 4'b0; // start the full interval count over
-                    state       <= `START_BIT;
+            if (!in_sample) begin
+                sample_count     <= sample_count + 4'b1;
+                if (&sample_count[2:0]) begin // reached 7
+                    busy         <= 1'b1;
+                    done         <= 1'b0;
+                    err          <= 1'b0;
+                    sample_count <= 4'b0; // start the full interval count over
+                    state        <= `START_BIT;
                 end
-            end else if (|sampleCount) begin
+            end else if (|sample_count) begin
                 // bit did not remain low while waiting till 7 -
                 // remain in IDLE state
-                err             <= 1'b1;
+                err              <= 1'b1;
             end
         end
 
@@ -116,12 +116,12 @@ always @(posedge clk) begin
             /*
              * Wait one full baud interval to the mid-point of first bit
              */
-            sampleCount      <= sampleCount + 4'b1;
-            if (&sampleCount) begin // reached 15
-                receivedData <= { 7'b0, inSample };
-                out          <= 8'b0;
-                bitIndex     <= 3'b1;
-                state        <= `DATA_BITS;
+            sample_count      <= sample_count + 4'b1;
+            if (&sample_count) begin // reached 15
+                received_data <= { 7'b0, in_sample };
+                out           <= 8'b0;
+                bit_index     <= 3'b1;
+                state         <= `DATA_BITS;
             end
         end
 
@@ -129,17 +129,17 @@ always @(posedge clk) begin
             /*
              * Take 8 baud intervals to receive serial data
              */
-            if (&sampleCount) begin // save one bit of received data
-                sampleCount            <= 4'b0;
-                receivedData[bitIndex] <= inSample;
-                if (&bitIndex) begin
-                    bitIndex           <= 3'b0;
-                    state              <= `STOP_BIT;
+            if (&sample_count) begin // save one bit of received data
+                sample_count             <= 4'b0;
+                received_data[bit_index] <= in_sample;
+                if (&bit_index) begin
+                    bit_index            <= 3'b0;
+                    state                <= `STOP_BIT;
                 end else begin
-                    bitIndex           <= bitIndex + 3'b1;
+                    bit_index            <= bit_index + 3'b1;
                 end
             end else begin
-                sampleCount            <= sampleCount + 4'b1;
+                sample_count             <= sample_count + 4'b1;
             end
         end
 
@@ -156,35 +156,35 @@ always @(posedge clk) begin
              *   precisely in reality, accept the transition to handling the
              *   next start bit any time after the stop bit mid-point
              */
-            inHoldReg <= { inHoldReg[2:0], inSample };
+            in_hold_reg <= { in_hold_reg[2:0], in_sample };
 
-            sampleCount              <= sampleCount + 4'b1;
-            if (sampleCount[3]) begin // reached 8 to 15
+            sample_count              <= sample_count + 4'b1;
+            if (sample_count[3]) begin // reached 8 to 15
                 // in the second half of the baud interval
-                if (!inSample) begin
+                if (!in_sample) begin
                     // accept that transmission has completed only if the stop
                     // signal held for a time of >= 4 rx clocks before it
                     // changed to a start signal
-                    if (&inHoldReg) begin
+                    if (&in_hold_reg) begin
                         // can accept the transmitted data and output it
-                        done         <= 1'b1;
-                        out          <= receivedData;
-                        validCount   <= sampleCount;
-                        sampleCount  <= 4'b0;
-                        state        <= `IDLE;
+                        done          <= 1'b1;
+                        out           <= received_data;
+                        valid_count   <= sample_count;
+                        sample_count  <= 4'b0;
+                        state         <= `IDLE;
                     end else begin
                         // bit did not go high or remain high while waiting
                         // till 8 - signal {err} for this transmit
-                        err          <= 1'b1;
-                        sampleCount  <= 4'b0;
-                        state        <= `READY;
+                        err           <= 1'b1;
+                        sample_count  <= 4'b0;
+                        state         <= `READY;
                     end
-                end else if (&sampleCount) begin // reached 15
+                end else if (&sample_count) begin // reached 15
                     // can accept the transmitted data and output it
-                    done             <= 1'b1;
-                    out              <= receivedData;
-                    sampleCount      <= 4'b0;
-                    state            <= `READY;
+                    done              <= 1'b1;
+                    out               <= received_data;
+                    sample_count      <= 4'b0;
+                    state             <= `READY;
                 end
             end
         end
@@ -194,11 +194,11 @@ always @(posedge clk) begin
              * Wait one full bit cycle to sustain the {out} data, the
              *   {done} signal or the {err} signal
              */
-            sampleCount     <= sampleCount + 4'b1;
-            if (&sampleCount[3:1]) begin // reached 14 -
+            sample_count     <= sample_count + 4'b1;
+            if (&sample_count[3:1]) begin // reached 14 -
                 // additional tick 15 comes from transitting the READY state
                 // to the RESET state
-                state       <= `RESET;
+                state        <= `RESET;
             end
         end
 

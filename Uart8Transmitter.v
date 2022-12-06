@@ -49,9 +49,9 @@ module Uart8Transmitter #(
     output reg out       // tx line
 );
 
-reg [2:0] state    = `RESET;
-reg [7:0] inData   = 8'b0; // storage for the data to transmit serially
-reg [2:0] bitIndex = 3'b0; // index for 8-bit data
+reg [2:0] state     = `RESET;
+reg [7:0] in_data   = 8'b0; // storage for the data to transmit serially
+reg [2:0] bit_index = 3'b0; // index for 8-bit data
 
 always @(posedge clk) begin
     if (!en) begin
@@ -70,37 +70,37 @@ always @(posedge clk) begin
 
         `IDLE: begin
             if (start) begin
-                inData <= in; // register the input data
-                state  <= `START_BIT;
+                in_data <= in; // register the input data
+                state   <= `START_BIT;
             end
         end
 
         `START_BIT: begin
-            busy     <= 1'b1;
-            done     <= 1'b0;
-            out      <= 1'b0; // send the space output, aka start bit (low)
-            bitIndex <= 3'b0;
-            state    <= `DATA_BITS;
+            busy      <= 1'b1;
+            done      <= 1'b0;
+            out       <= 1'b0; // send the space output, aka start bit (low)
+            bit_index <= 3'b0;
+            state     <= `DATA_BITS;
         end
 
         `DATA_BITS: begin // take 8 clock cycles for data bits to be sent
-            out          <= inData[bitIndex];
-            if (&bitIndex) begin
-                bitIndex <= 3'b0;
-                state    <= `STOP_BIT;
+            out           <= in_data[bit_index];
+            if (&bit_index) begin
+                bit_index <= 3'b0;
+                state     <= `STOP_BIT;
             end else begin
-                bitIndex <= bitIndex + 1'b1;
+                bit_index <= bit_index + 1'b1;
             end
         end
 
         `STOP_BIT: begin
-            done       <= 1'b1; // signal transmission stop (one clock cycle)
-            out        <= 1'b1; // transition to the mark state output (high)
+            done        <= 1'b1; // signal transmission stop (one clock cycle)
+            out         <= 1'b1; // transition to the mark state output (high)
             if (TURBO_FRAMES && start) begin
-                inData <= in; // register the input data
-                state  <= `START_BIT; // go straight to transmit
+                in_data <= in; // register the input data
+                state   <= `START_BIT; // go straight to transmit
             end else begin
-                state  <= `RESET; // keep mark state (high) for one extra cycle
+                state   <= `RESET; // keep mark state (high) for one extra cycle
             end
         end
 
