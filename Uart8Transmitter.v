@@ -85,12 +85,11 @@ always @(posedge clk) begin
         end
 
         `DATA_BITS: begin // take 8 clock cycles for data bits to be sent
-            out           <= in_data[bit_index];
+            out       <= in_data[bit_index];
+            bit_index <= bit_index + 3'b1;
             if (&bit_index) begin
-                bit_index <= 3'b0;
-                state     <= `STOP_BIT;
-            end else begin
-                bit_index <= bit_index + 1'b1;
+                // bit_index wraps around to zero
+                state <= `STOP_BIT;
             end
         end
 

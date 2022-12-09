@@ -146,6 +146,7 @@ always @(posedge clk) begin
              */
             sample_count      <= sample_count + 4'b1;
             if (&sample_count) begin // reached 15
+                // sample_count wraps around to zero
                 received_data <= { 7'b0, in_sample };
                 out           <= 8'b0;
                 bit_index     <= 3'b1;
@@ -157,17 +158,15 @@ always @(posedge clk) begin
             /*
              * Take 8 baud intervals to receive serial data
              */
-            if (&sample_count) begin // save one bit of received data
-                sample_count             <= 4'b0;
+            sample_count                 <= sample_count + 4'b1;
+            if (&sample_count) begin // reached 15 - save one more bit of data
                 received_data[bit_index] <= in_sample;
+                bit_index                <= bit_index + 3'b1;
                 if (&bit_index) begin
-                    bit_index            <= 3'b0;
+                    // bit_index wraps around to zero
+                    // sample_count wraps around to zero
                     state                <= `STOP_BIT;
-                end else begin
-                    bit_index            <= bit_index + 3'b1;
                 end
-            end else begin
-                sample_count             <= sample_count + 4'b1;
             end
         end
 
