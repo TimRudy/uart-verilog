@@ -4,7 +4,7 @@
 [*]
 [dumpfile] "12.vcd"
 [dumpfile_mtime] "Sun Oct 23 03:49:29 2022"
-[dumpfile_size] 2768312
+[dumpfile_size] 2770174
 [savefile] "12.gtkw"
 [timestart] 0
 [size] 1536 937
@@ -36,13 +36,14 @@ test.uart2.rxDone
 test.uart2.rxErr
 test.uart2.rxInst.in
 test.uart2.rxInst.in_sample
-@800028
-test.uart2.rxInst.in_hold_reg[3:0]
+@800022
+test.uart2.rxInst.in_hold_reg[4:0]
 @28
-(0)test.uart2.rxInst.in_hold_reg[3:0]
-(1)test.uart2.rxInst.in_hold_reg[3:0]
-(2)test.uart2.rxInst.in_hold_reg[3:0]
-(3)test.uart2.rxInst.in_hold_reg[3:0]
+(0)test.uart2.rxInst.in_hold_reg[4:0]
+(1)test.uart2.rxInst.in_hold_reg[4:0]
+(2)test.uart2.rxInst.in_hold_reg[4:0]
+(3)test.uart2.rxInst.in_hold_reg[4:0]
+(4)test.uart2.rxInst.in_hold_reg[4:0]
 @1001200
 -group_end
 @28

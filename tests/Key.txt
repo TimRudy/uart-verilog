@@ -13,3 +13,12 @@
 13. 20 frames continuous, TURBO_FRAMES = 0: success
 14. 20 frames continuous, TURBO_FRAMES = 1: success
 15. 20 frames continuous, TURBO_FRAMES = 1: fail at bytes 99 (after 0) and 7 (after 149) because setup is not fast enough for the rate
+16. Partial frame, focusing on start bit after a high signal of minimal length: 4 ticks: success
+17. Partial frame, focusing on start bit after a high signal of minimal length: 3 ticks: fail to start until a later bit, because high signal time before start bit is not met (*shows err and reset err)
+18. Partial frame, focusing on start bit after a high signal of minimal length: 4 ticks: fail to start until a later bit, because start bit signal time is not met after the high signal time is met (*shows err and reset err)
+19. Partial frame, focusing on start bit low-high-low false signal: fail to start until a later bit, after high signal time is met (*shows err and reset err)
+20. One frame, stop bit glitch high-low-high but then stable: success
+21. One frame, stop bit glitch high-low-high starting in first half continuing to second half, then stable: success
+22. Incomplete xaction due to stop bit "did not go high or remain high" while waiting till after mid-point: fail to accept (*shows err sustained for 16-tick cycle)
+23. Error signal maintained when transitioning to IDLE state in error condition because there was no stop signal: success
+24. Error signal in IDLE state as long as rx has not been driven high, when no transmit is started: success

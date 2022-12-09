@@ -33,8 +33,11 @@ reg [1:0] in_reg        = 2'b0; // shift reg for input signal conditioning
 reg [4:0] in_hold_reg   = 5'b0; // shift reg for signal hold time checks
 reg [3:0] sample_count  = 4'b0; // count ticks for 16x oversample
 reg [3:0] valid_count   = 4'b0; // count ticks before clearing output data
+reg was_stop_good       = 1'b0;
 reg [7:0] received_data = 8'b0; // storage for the deserialized data
 wire in_sample;
+wire [3:0] in_prior_hold_reg;
+wire [3:0] in_current_hold_reg;
 
 /*
  * Double-register the incoming data:
@@ -55,8 +58,11 @@ assign in_sample = in_reg[1];
  *   minimum hold time of 4 {clk} ticks for any rx signal
  */
 always @(posedge clk) begin
-    in_hold_reg <= { in_hold_reg[3:0], in_sample };
+    in_hold_reg <= { in_hold_reg[3:1], in_sample, in_reg[0] };
 end
+
+assign in_prior_hold_reg   = in_hold_reg[4:1];
+assign in_current_hold_reg = in_hold_reg[3:0];
 
 /*
  * End the validity of output data after precise time of one serial bit cycle:
@@ -88,6 +94,7 @@ always @(posedge clk) begin
             done          <= 1'b0;
             err           <= 1'b0;
             sample_count  <= 4'b0;
+            was_stop_good <= 1'b0;
             received_data <= 8'b0;
             out           <= 8'b0;
             if (en) begin
@@ -104,20 +111,32 @@ always @(posedge clk) begin
              *
              * Then start the count for the proceeding full baud intervals
              */
-            if (!in_sample && (&in_hold_reg[4:1] || sample_count)) begin
-                // meets min previous high signal
-                sample_count     <= sample_count + 4'b1;
-                if (&sample_count[2:0]) begin // reached 7
-                    busy         <= 1'b1;
-                    done         <= 1'b0;
-                    err          <= 1'b0;
-                    sample_count <= 4'b0; // start the full interval count over
-                    state        <= `START_BIT;
+            if (!in_sample) begin
+                if (sample_count == 4'b0) begin
+                    if (&in_prior_hold_reg) begin
+                        // meets min previous high signal
+                        err           <= 1'b0;
+                        sample_count  <= sample_count + 4'b1;
+                    end else begin
+                        err           <= 1'b1;
+                    end
+                end else begin
+                    sample_count      <= sample_count + 4'b1;
+                    if (&sample_count[2:0]) begin // reached 7
+                        busy          <= 1'b1;
+                        done          <= 1'b0;
+                        err           <= 1'b0;
+                        sample_count  <= 4'b0; // start the interval count over
+                        was_stop_good <= 1'b0;
+                        state         <= `START_BIT;
+                    end
                 end
             end else if (|sample_count) begin
                 // bit did not remain low while waiting till 7 -
                 // remain in IDLE state
-                err              <= 1'b1;
+                err                   <= 1'b1;
+                sample_count          <= 4'b0;
+                received_data         <= 8'b0;
             end
         end
 
@@ -167,31 +186,44 @@ always @(posedge clk) begin
              */
             sample_count              <= sample_count + 4'b1;
             if (sample_count[3]) begin // reached 8 to 15
-                // in the second half of the baud interval
+                if (sample_count == 4'b1000 &&
+                        &in_current_hold_reg) begin // meets min high hold time
+                    was_stop_good     <= 1'b1;
+                end
+
                 if (!in_sample) begin
                     // accept that transmission has completed only if the stop
-                    // signal held for a time of >= 4 rx clocks before it
+                    // signal held for a time of >= 4 rx ticks before it
                     // changed to a start signal
-                    if (&in_hold_reg[4:1]) begin // meets stop signal hold time
+                    if (was_stop_good) begin
                         // can accept the transmitted data and output it
                         done          <= 1'b1;
                         out           <= received_data;
                         valid_count   <= sample_count;
                         sample_count  <= 4'b0;
                         state         <= `IDLE;
-                    end else begin
-                        // bit did not go high or remain high while waiting
-                        // till 8 - signal {err} for this transmit
+                    end else if (&sample_count) begin // reached 15
+                        // bit did not go high or remain high -
+                        // signal {err} for this transmit
+                        busy          <= 1'b0;
+                        err           <= 1'b1;
+                        sample_count  <= 4'b0;
+                        received_data <= 8'b0;
+                        state         <= `IDLE;
+                    end
+                end else begin
+                    if (&in_current_hold_reg) begin // meets min high hold time
+                        // can accept the transmitted data and output it
+                        done          <= 1'b1;
+                        out           <= received_data;
+                        sample_count  <= 4'b0;
+                        state         <= `READY;
+                    end else if (&sample_count) begin // reached 15
+                        // signal {err} for this transmit
                         err           <= 1'b1;
                         sample_count  <= 4'b0;
                         state         <= `READY;
                     end
-                end else if (&sample_count) begin // reached 15
-                    // can accept the transmitted data and output it
-                    done              <= 1'b1;
-                    out               <= received_data;
-                    sample_count      <= 4'b0;
-                    state             <= `READY;
                 end
             end
         end
