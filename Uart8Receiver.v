@@ -27,14 +27,14 @@ module Uart8Receiver (
     output reg [7:0] out // received data
 );
 
-reg [2:0] state         = `RESET;
-reg [2:0] bit_index     = 3'b0; // index for 8-bit data
-reg [1:0] in_reg        = 2'b0; // shift reg for input signal conditioning
-reg [4:0] in_hold_reg   = 5'b0; // shift reg for signal hold time checks
-reg [3:0] sample_count  = 4'b0; // count ticks for 16x oversample
-reg [3:0] valid_count   = 4'b0; // count ticks before clearing output data
-reg was_stop_good       = 1'b0;
-reg [7:0] received_data = 8'b0; // storage for the deserialized data
+reg [2:0] state          = `RESET;
+reg [2:0] bit_index      = 3'b0; // index for 8-bit data
+reg [1:0] in_reg         = 2'b0; // shift reg for input signal conditioning
+reg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks
+reg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample
+reg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data
+reg was_stop_good        = 1'b0; // flag for stop signal hold time was met
+reg [7:0] received_data  = 8'b0; // storage for the deserialized data
 wire in_sample;
 wire [3:0] in_prior_hold_reg;
 wire [3:0] in_current_hold_reg;
@@ -70,15 +70,18 @@ assign in_current_hold_reg = in_hold_reg[3:0];
  * Output signals from this module might as well be consistent with input
  *   rate, which is the baud rate
  *
- * This hold is for the case when detection of a next transmit cut short
- *   the prior stop and ready transitions; i.e. IDLE state was entered direct
- *   from STOP_BIT state
+ * This hold is for the case when detection of a next transmit cut the
+ *   prior stop and ready transitions short; i.e. IDLE state has been entered
+ *   direct from STOP_BIT state or READY state
  */
 always @(posedge clk) begin
-    if (|valid_count) begin
-        valid_count <= valid_count + 4'b1;
-        if (&valid_count) begin // reached 15 - timed output interval ends
-            out     <= 8'b0;
+    if (|out_hold_count) begin
+        out_hold_count     <= out_hold_count + 5'b1;
+        if (out_hold_count == 5'b10000) begin // reached 16 -
+            // timed output interval ends
+            out_hold_count <= 5'b0;
+            done           <= 1'b0;
+            out            <= 8'b0;
         end
     end
 end
@@ -90,15 +93,16 @@ always @(posedge clk) begin
 
     case (state)
         `RESET: begin
-            busy          <= 1'b0;
-            done          <= 1'b0;
-            err           <= 1'b0;
-            sample_count  <= 4'b0;
-            was_stop_good <= 1'b0;
-            received_data <= 8'b0;
-            out           <= 8'b0;
+            busy           <= 1'b0;
+            done           <= 1'b0;
+            err            <= 1'b0;
+            sample_count   <= 4'b0;
+            out_hold_count <= 5'b0;
+            was_stop_good  <= 1'b0;
+            received_data  <= 8'b0;
+            out            <= 8'b0;
             if (en) begin
-                state     <= `IDLE;
+                state      <= `IDLE;
             end
         end
 
@@ -113,18 +117,19 @@ always @(posedge clk) begin
              */
             if (!in_sample) begin
                 if (sample_count == 4'b0) begin
-                    if (&in_prior_hold_reg) begin
-                        // meets min previous high signal
+                    if (&in_prior_hold_reg || was_stop_good) begin
+                        // meets the preceding min high hold time
                         err           <= 1'b0;
-                        sample_count  <= sample_count + 4'b1;
+                        sample_count  <= 4'b1;
                     end else begin
+                        // this was a false start -
+                        // remain in IDLE state with sample_count zero
                         err           <= 1'b1;
                     end
                 end else begin
                     sample_count      <= sample_count + 4'b1;
                     if (&sample_count[2:0]) begin // reached 7
                         busy          <= 1'b1;
-                        done          <= 1'b0;
                         err           <= 1'b0;
                         sample_count  <= 4'b0; // start the interval count over
                         was_stop_good <= 1'b0;
@@ -183,45 +188,44 @@ always @(posedge clk) begin
              *   precisely in reality, accept the transition to handling the
              *   next start bit any time after the stop bit mid-point
              */
-            sample_count              <= sample_count + 4'b1;
+            sample_count               <= sample_count + 4'b1;
             if (sample_count[3]) begin // reached 8 to 15
-                if (sample_count == 4'b1000 &&
-                        &in_current_hold_reg) begin // meets min high hold time
-                    was_stop_good     <= 1'b1;
-                end
-
                 if (!in_sample) begin
-                    // accept that transmission has completed only if the stop
+                    // accept that transmit has completed only if the stop
                     // signal held for a time of >= 4 rx ticks before it
                     // changed to a start signal
-                    if (was_stop_good) begin
+                    if (sample_count == 4'b1000 &&
+                            &in_prior_hold_reg) begin // meets the hold time
+                        was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
-                        done          <= 1'b1;
-                        out           <= received_data;
-                        valid_count   <= sample_count;
-                        sample_count  <= 4'b0;
-                        state         <= `IDLE;
+                        done           <= 1'b1;
+                        out            <= received_data;
+                        sample_count   <= 4'b0;
+                        out_hold_count <= 5'b1;
+                        state          <= `IDLE;
                     end else if (&sample_count) begin // reached 15
                         // bit did not go high or remain high -
-                        // signal {err} for this transmit
-                        busy          <= 1'b0;
-                        err           <= 1'b1;
-                        sample_count  <= 4'b0;
-                        received_data <= 8'b0;
-                        state         <= `IDLE;
+                        // signal {err}, continuing until condition resolved
+                        busy           <= 1'b0;
+                        err            <= 1'b1;
+                        sample_count   <= 4'b0;
+                        received_data  <= 8'b0;
+                        state          <= `IDLE;
                     end
                 end else begin
                     if (&in_current_hold_reg) begin // meets min high hold time
+                        was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
-                        done          <= 1'b1;
-                        out           <= received_data;
-                        sample_count  <= 4'b0;
-                        state         <= `READY;
+                        done           <= 1'b1;
+                        out            <= received_data;
+                        sample_count   <= 4'b0;
+                        state          <= `READY;
                     end else if (&sample_count) begin // reached 15
+                        // did not meet min high hold time -
                         // signal {err} for this transmit
-                        err           <= 1'b1;
-                        sample_count  <= 4'b0;
-                        state         <= `READY;
+                        err            <= 1'b1;
+                        sample_count   <= 4'b0;
+                        state          <= `READY;
                     end
                 end
             end
@@ -232,17 +236,17 @@ always @(posedge clk) begin
              * Wait one full bit cycle to sustain the {out} data, the
              *   {done} signal or the {err} signal
              */
-            sample_count     <= sample_count + 4'b1;
+            sample_count       <= sample_count + 4'b1;
             if (!err && !in_sample) begin
-                // accept the trigger to start, immediately following
-                // transmission stop
-                valid_count  <= sample_count;
-                sample_count <= 4'b0;
-                state        <= `IDLE;
+                // accept the trigger to start, right from stop signal high
+                // (in this case transmit signaling of {done} is in progress)
+                sample_count   <= 4'b0;
+                out_hold_count <= sample_count + 5'b00010; // continue counting
+                state          <= `IDLE;
             end else if (&sample_count[3:1]) begin // reached 14 -
                 // additional tick 15 comes from transitting the READY state
-                // to the RESET state
-                state        <= `RESET;
+                // to get to the RESET state
+                state          <= `RESET;
             end
         end
 

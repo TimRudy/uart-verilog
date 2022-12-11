@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.81 (w)1999-2017 BSI
-[*] Sun Nov 13 04:47:35 2022
+[*] Sun Nov 27 14:03:49 2022
 [*]
-[dumpfile] "20a.vcd"
-[dumpfile_mtime] "Sun Nov 13 04:46:27 2022"
-[dumpfile_size] 669614
-[savefile] "20a.gtkw"
-[timestart] 555000
+[dumpfile] "28.vcd"
+[dumpfile_mtime] "Sun Nov 27 14:02:30 2022"
+[dumpfile_size] 869773
+[savefile] "28.gtkw"
+[timestart] 704900
 [size] 1536 937
 [pos] -9 -9
-*-16.833487 1056000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.818604 1155000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test.
 [treeopen] test.uart.
 [sst_width] 197
@@ -25,26 +25,29 @@ test.uart.rxInst.busy
 test.uart.rxInst.done
 test.uart.rxInst.err
 test.uart.rxInst.in_sample
-@800022
+@c00022
 test.uart.rxInst.in_prior_hold_reg[3:0]
 @28
 (0)test.uart.rxInst.in_prior_hold_reg[3:0]
 (1)test.uart.rxInst.in_prior_hold_reg[3:0]
 (2)test.uart.rxInst.in_prior_hold_reg[3:0]
 (3)test.uart.rxInst.in_prior_hold_reg[3:0]
-@1001200
+@1401200
 -group_end
-@800022
+@c00022
 test.uart.rxInst.in_current_hold_reg[3:0]
 @28
 (0)test.uart.rxInst.in_current_hold_reg[3:0]
 (1)test.uart.rxInst.in_current_hold_reg[3:0]
 (2)test.uart.rxInst.in_current_hold_reg[3:0]
 (3)test.uart.rxInst.in_current_hold_reg[3:0]
-@1001200
+@1401200
 -group_end
+@28
+test.uart.rxInst.was_stop_good
 @22
 test.uart.rxInst.sample_count[3:0]
+test.uart.rxInst.out_hold_count[4:0]
 @28
 test.uart.rxInst.state[2:0]
 test.uart.rxInst.bit_index[2:0]
