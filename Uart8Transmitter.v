@@ -43,7 +43,7 @@ module Uart8Transmitter #(
     input wire clk,      // baud rate
     input wire en,
     input wire start,    // start transmission
-    input wire [7:0] in, // data to transmit
+    input wire [7:0] in, // parallel data to transmit
     output reg busy,     // transmit is in progress
     output reg done,     // end of transmission
     output reg out       // tx line
@@ -60,10 +60,13 @@ always @(posedge clk) begin
 
     case (state)
         `RESET: begin
+            // state variables
+            bit_index <= 3'b0;
+            // outputs
             busy      <= 1'b0;
             done      <= 1'b0;
             out       <= 1'b1; // line is high for IDLE state
-            bit_index <= 3'b0;
+            // next state
             if (en) begin
                 state <= `IDLE;
             end
@@ -77,10 +80,10 @@ always @(posedge clk) begin
         end
 
         `START_BIT: begin
+            bit_index <= 3'b0;
             busy      <= 1'b1;
             done      <= 1'b0;
             out       <= 1'b0; // send the space output, aka start bit (low)
-            bit_index <= 3'b0;
             state     <= `DATA_BITS;
         end
 
@@ -94,13 +97,13 @@ always @(posedge clk) begin
         end
 
         `STOP_BIT: begin
-            done              <= 1'b1; // signal transmission stop
+            done              <= 1'b1; // signal the transmission stop
             out               <= 1'b1; // transition to mark state output (high)
             if (start) begin
                 if (done == 1'b0) begin // this distinguishes 2 sub-states
-                    in_data   <= in; // register the input data
+                    in_data   <= in; // register new input data
                     if (TURBO_FRAMES) begin
-                        state <= `START_BIT; // go straight to transmit
+                        state <= `START_BIT; // go direct to transmit
                     end else begin
                         state <= `STOP_BIT; // keep mark state one extra cycle
                     end

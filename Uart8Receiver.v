@@ -24,16 +24,16 @@ module Uart8Receiver (
     output reg busy,     // transaction is in progress
     output reg done,     // end of transaction
     output reg err,      // error while receiving data
-    output reg [7:0] out // received data
+    output reg [7:0] out // received data put back in parallel form
 );
 
 reg [2:0] state          = `RESET;
-reg [2:0] bit_index      = 3'b0; // index for 8-bit data
 reg [1:0] in_reg         = 2'b0; // shift reg for input signal conditioning
 reg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks
 reg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample
 reg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data
 reg was_stop_good        = 1'b0; // flag for stop signal hold time was met
+reg [2:0] bit_index      = 3'b0; // index for 8-bit data
 reg [7:0] received_data  = 8'b0; // storage for the deserialized data
 wire in_sample;
 wire [3:0] in_prior_hold_reg;
@@ -44,7 +44,7 @@ wire [3:0] in_current_hold_reg;
  *
  * This prevents metastability problems crossing into rx clock domain
  *
- * After registering, only the {in_sample} wire is to be accessed - the
+ * After registering, only the in_sample wire is to be accessed - the
  *   earlier, unconditioned signal {in} must be ignored
  */
 always @(posedge clk) begin
@@ -93,14 +93,17 @@ always @(posedge clk) begin
 
     case (state)
         `RESET: begin
-            busy           <= 1'b0;
-            done           <= 1'b0;
-            err            <= 1'b0;
+            // state variables
             sample_count   <= 4'b0;
             out_hold_count <= 5'b0;
             was_stop_good  <= 1'b0;
             received_data  <= 8'b0;
-            out            <= 8'b0;
+            // outputs
+            busy           <= 1'b0;
+            done           <= 1'b0;
+            err            <= 1'b0;
+            out            <= 8'b0; // parallel data output only during {done}
+            // next state
             if (en) begin
                 state      <= `IDLE;
             end
@@ -119,8 +122,8 @@ always @(posedge clk) begin
                 if (sample_count == 4'b0) begin
                     if (&in_prior_hold_reg || was_stop_good) begin
                         // meets the preceding min high hold time
-                        err           <= 1'b0;
                         sample_count  <= 4'b1;
+                        err           <= 1'b0;
                     end else begin
                         // this was a false start -
                         // remain in IDLE state with sample_count zero
@@ -129,19 +132,19 @@ always @(posedge clk) begin
                 end else begin
                     sample_count      <= sample_count + 4'b1;
                     if (&sample_count[2:0]) begin // reached 7
-                        busy          <= 1'b1;
-                        err           <= 1'b0;
                         sample_count  <= 4'b0; // start the interval count over
                         was_stop_good <= 1'b0;
+                        busy          <= 1'b1;
+                        err           <= 1'b0;
                         state         <= `START_BIT;
                     end
                 end
             end else if (|sample_count) begin
                 // bit did not remain low while waiting till 7 -
                 // remain in IDLE state
-                err                   <= 1'b1;
                 sample_count          <= 4'b0;
                 received_data         <= 8'b0;
+                err                   <= 1'b1;
             end
         end
 
@@ -152,9 +155,9 @@ always @(posedge clk) begin
             sample_count      <= sample_count + 4'b1;
             if (&sample_count) begin // reached 15
                 // sample_count wraps around to zero
+                bit_index     <= 3'b1;
                 received_data <= { 7'b0, in_sample };
                 out           <= 8'b0;
-                bit_index     <= 3'b1;
                 state         <= `DATA_BITS;
             end
         end
@@ -198,33 +201,33 @@ always @(posedge clk) begin
                             &in_prior_hold_reg) begin // meets the hold time
                         was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
-                        done           <= 1'b1;
-                        out            <= received_data;
                         sample_count   <= 4'b0;
                         out_hold_count <= 5'b1;
+                        done           <= 1'b1;
+                        out            <= received_data;
                         state          <= `IDLE;
                     end else if (&sample_count) begin // reached 15
                         // bit did not go high or remain high -
                         // signal {err}, continuing until condition resolved
-                        busy           <= 1'b0;
-                        err            <= 1'b1;
                         sample_count   <= 4'b0;
                         received_data  <= 8'b0;
+                        busy           <= 1'b0;
+                        err            <= 1'b1;
                         state          <= `IDLE;
                     end
                 end else begin
                     if (&in_current_hold_reg) begin // meets min high hold time
                         was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
+                        sample_count   <= 4'b0;
                         done           <= 1'b1;
                         out            <= received_data;
-                        sample_count   <= 4'b0;
                         state          <= `READY;
                     end else if (&sample_count) begin // reached 15
                         // did not meet min high hold time -
                         // signal {err} for this transmit
-                        err            <= 1'b1;
                         sample_count   <= 4'b0;
+                        err            <= 1'b1;
                         state          <= `READY;
                     end
                 end
