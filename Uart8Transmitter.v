@@ -50,7 +50,7 @@ module Uart8Transmitter #(
 );
 
 reg [2:0] state     = `RESET;
-reg [7:0] in_data   = 8'b0; // storage for the data to transmit serially
+reg [7:0] in_data   = 8'b0; // shift reg for the data to transmit serially
 reg [2:0] bit_index = 3'b0; // index for 8-bit data
 
 always @(posedge clk) begin
@@ -88,7 +88,12 @@ always @(posedge clk) begin
         end
 
         `DATA_BITS: begin // take 8 clock cycles for data bits to be sent
-            out       <= in_data[bit_index];
+            // grab each input bit using a shift register: the hardware
+            // realization is simple compared to routing the access
+            // dynamically, i.e. using in_data[bit_index]
+            in_data   <= { 1'b0, in_data[7:1] };
+            out       <= in_data[0];
+            // manage the state transition
             bit_index <= bit_index + 3'b1;
             if (&bit_index) begin
                 // bit_index wraps around to zero

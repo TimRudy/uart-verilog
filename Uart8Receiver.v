@@ -33,7 +33,7 @@ reg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks
 reg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample
 reg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data
 reg [2:0] bit_index      = 3'b0; // index for 8-bit data
-reg [7:0] received_data  = 8'b0; // storage for the deserialized data
+reg [7:0] received_data  = 8'b0; // shift reg for the deserialized data
 wire in_sample;
 wire [3:0] in_prior_hold_reg;
 wire [3:0] in_current_hold_reg;
@@ -155,7 +155,7 @@ always @(posedge clk) begin
             if (&sample_count) begin // reached 15
                 // sample_count wraps around to zero
                 bit_index     <= 3'b1;
-                received_data <= { 7'b0, in_sample };
+                received_data <= { in_sample, 7'b0 };
                 out           <= 8'b0;
                 state         <= `DATA_BITS;
             end
@@ -165,14 +165,18 @@ always @(posedge clk) begin
             /*
              * Take 8 baud intervals to receive serial data
              */
-            sample_count                 <= sample_count + 4'b1;
+            sample_count      <= sample_count + 4'b1;
             if (&sample_count) begin // reached 15 - save one more bit of data
-                received_data[bit_index] <= in_sample;
-                bit_index                <= bit_index + 3'b1;
+                // store the bit using a shift register: the hardware
+                // realization is simple compared to routing the bit
+                // dynamically, i.e. using received_data[bit_index]
+                received_data <= { in_sample, received_data[7:1] };
+                // manage the state transition
+                bit_index     <= bit_index + 3'b1;
                 if (&bit_index) begin
                     // bit_index wraps around to zero
                     // sample_count wraps around to zero
-                    state                <= `STOP_BIT;
+                    state     <= `STOP_BIT;
                 end
             end
         end
