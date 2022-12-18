@@ -32,7 +32,6 @@ reg [1:0] in_reg         = 2'b0; // shift reg for input signal conditioning
 reg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks
 reg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample
 reg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data
-reg was_stop_good        = 1'b0; // flag for stop signal hold time was met
 reg [2:0] bit_index      = 3'b0; // index for 8-bit data
 reg [7:0] received_data  = 8'b0; // storage for the deserialized data
 wire in_sample;
@@ -96,7 +95,6 @@ always @(posedge clk) begin
             // state variables
             sample_count   <= 4'b0;
             out_hold_count <= 5'b0;
-            was_stop_good  <= 1'b0;
             received_data  <= 8'b0;
             // outputs
             busy           <= 1'b0;
@@ -120,8 +118,10 @@ always @(posedge clk) begin
              */
             if (!in_sample) begin
                 if (sample_count == 4'b0) begin
-                    if (&in_prior_hold_reg || was_stop_good) begin
-                        // meets the preceding min high hold time
+                    if (&in_prior_hold_reg || done && !err) begin
+                        // meets the preceding min high hold time -
+                        // note that {done} && !{err} encodes the fact that
+                        // the min hold time was met earlier in STOP_BIT state
                         sample_count  <= 4'b1;
                         err           <= 1'b0;
                     end else begin
@@ -133,7 +133,6 @@ always @(posedge clk) begin
                     sample_count      <= sample_count + 4'b1;
                     if (&sample_count[2:0]) begin // reached 7
                         sample_count  <= 4'b0; // start the interval count over
-                        was_stop_good <= 1'b0;
                         busy          <= 1'b1;
                         err           <= 1'b0;
                         state         <= `START_BIT;
@@ -199,7 +198,6 @@ always @(posedge clk) begin
                     // changed to a start signal
                     if (sample_count == 4'b1000 &&
                             &in_prior_hold_reg) begin // meets the hold time
-                        was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
                         sample_count   <= 4'b0;
                         out_hold_count <= 5'b1;
@@ -217,7 +215,6 @@ always @(posedge clk) begin
                     end
                 end else begin
                     if (&in_current_hold_reg) begin // meets min high hold time
-                        was_stop_good  <= 1'b1;
                         // can accept the transmitted data and output it
                         sample_count   <= 4'b0;
                         done           <= 1'b1;

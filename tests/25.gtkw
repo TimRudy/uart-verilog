@@ -4,7 +4,7 @@
 [*]
 [dumpfile] "25.vcd"
 [dumpfile_mtime] "Sun Nov 27 13:41:17 2022"
-[dumpfile_size] 870294
+[dumpfile_size] 870249
 [savefile] "25.gtkw"
 [timestart] 704900
 [size] 1536 937
@@ -43,8 +43,6 @@ test.uart.rxInst.in_current_hold_reg[3:0]
 (3)test.uart.rxInst.in_current_hold_reg[3:0]
 @1001200
 -group_end
-@28
-test.uart.rxInst.was_stop_good
 @22
 test.uart.rxInst.sample_count[3:0]
 test.uart.rxInst.out_hold_count[4:0]
