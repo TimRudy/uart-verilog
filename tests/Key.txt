@@ -26,3 +26,4 @@
 26. Error at beginning of next xaction due to rx start signal not meeting its requirement: success accepting previous xaction (*shows done sustained for 16-tick cycle, shows err and reset err)
 27. One frame, and next xaction starts during the READY state: success
 28: One frame, next xaction does not start in READY state, goes to RESET state: fail to start second xaction because rx stop signal too long (*shows err)
+29. Error at beginning of next xaction due to rx start signal not long enough to meet its extra hold requirement: success accepting previous xaction (*shows err)

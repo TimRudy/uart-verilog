@@ -131,15 +131,18 @@ always @(posedge clk) begin
                     end
                 end else begin
                     sample_count      <= sample_count + 4'b1;
-                    if (&sample_count[2:0]) begin // reached 7
-                        sample_count  <= 4'b0; // start the interval count over
+                    if (sample_count == 4'b1011) begin // reached 11
+                        // start signal meets an additional hold time
+                        // of >= 4 rx ticks after its own mid-point -
+                        // start new full interval count but from the mid-point
+                        sample_count  <= 4'b0100;
                         busy          <= 1'b1;
                         err           <= 1'b0;
                         state         <= `START_BIT;
                     end
                 end
             end else if (|sample_count) begin
-                // bit did not remain low while waiting till 7 -
+                // bit did not remain low while waiting till 7 then 11 -
                 // remain in IDLE state
                 sample_count          <= 4'b0;
                 received_data         <= 8'b0;
