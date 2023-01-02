@@ -1,5 +1,5 @@
 1.  One frame: success
-2.  RX_OVERSAMPLE_RATE = 17 short rx clock: success, correct data read out right near the end of RESET state when output cleared
+2.  RX_OVERSAMPLE_RATE = 17 leading rx clock: success, due to tolerance, correct data read out during done signal before output cleared
 3.  RX_OVERSAMPLE_RATE = 13 lagging rx clock: fail xaction, bits way out of sync, incorrect data read out
 4.  Two frames: success, with second outputs shortened due to external reset
 5.  Two frames, RX_OVERSAMPLE_RATE = 17: success for first, fail xaction for second
@@ -23,7 +23,7 @@
 23. Error signal sustained when transitioning to IDLE state in error condition because there was no rx stop signal: success
 24. Error signal in IDLE state as long as rx has not been driven high, when no transmit is started: success
 25. One frame, and next xaction starts after minimum required length of stop bit (no READY state): success (*shows done sustained for 16-tick cycle)
-26. Error at beginning of next xaction due to rx start signal not meeting its requirement: success accepting previous xaction (*shows done sustained for 16-tick cycle, shows err and reset err)
+26. Error at beginning of next xaction due to rx start signal not meeting its requirement: success accepting previous xaction (*shows done sustained for 16-tick cycle, shows err can overlap)
 27. One frame, and next xaction starts during the READY state: success
 28: One frame, next xaction does not start in READY state, goes to RESET state: fail to start second xaction because rx stop signal too long (*shows err)
-29. Error at beginning of next xaction due to rx start signal not long enough to meet its extra hold requirement: success accepting previous xaction (*shows err)
+29. Error at beginning of next xaction due to rx start signal not long enough to meet its extra hold requirement: success accepting previous xaction (*shows done, shows err)

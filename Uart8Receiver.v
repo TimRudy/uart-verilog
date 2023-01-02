@@ -24,7 +24,7 @@ module Uart8Receiver (
     output reg busy,     // transaction is in progress
     output reg done,     // end of transaction
     output reg err,      // error while receiving data
-    output reg [7:0] out // received data put back in parallel form
+    output reg [7:0] out // the received data assembled in parallel form
 );
 
 reg [2:0] state          = `RESET;
@@ -85,11 +85,19 @@ always @(posedge clk) begin
     end
 end
 
+/*
+ * Disable at any time in the flow
+ */
 always @(posedge clk) begin
     if (!en) begin
         state <= `RESET;
     end
+end
 
+/*
+ * State machine
+ */
+always @(posedge clk) begin
     case (state)
         `RESET: begin
             // state variables
@@ -100,7 +108,7 @@ always @(posedge clk) begin
             busy           <= 1'b0;
             done           <= 1'b0;
             err            <= 1'b0;
-            out            <= 8'b0; // parallel data output only during {done}
+            out            <= 8'b0; // output parallel data only during {done}
             // next state
             if (en) begin
                 state      <= `IDLE;
@@ -131,7 +139,7 @@ always @(posedge clk) begin
                     end
                 end else begin
                     sample_count      <= sample_count + 4'b1;
-                    if (sample_count == 4'b1011) begin // reached 11
+                    if (sample_count == 4'b1100) begin // reached 12
                         // start signal meets an additional hold time
                         // of >= 4 rx ticks after its own mid-point -
                         // start new full interval count but from the mid-point
@@ -142,7 +150,7 @@ always @(posedge clk) begin
                     end
                 end
             end else if (|sample_count) begin
-                // bit did not remain low while waiting till 7 then 11 -
+                // bit did not remain low while waiting till 8 then 12 -
                 // remain in IDLE state
                 sample_count          <= 4'b0;
                 received_data         <= 8'b0;
@@ -247,7 +255,7 @@ always @(posedge clk) begin
             if (!err && !in_sample) begin
                 // accept the trigger to start, right from stop signal high
                 // (in this case transmit signaling of {done} is in progress)
-                sample_count   <= 4'b0;
+                sample_count   <= 4'b1;
                 out_hold_count <= sample_count + 5'b00010; // continue counting
                 state          <= `IDLE;
             end else if (&sample_count[3:1]) begin // reached 14 -

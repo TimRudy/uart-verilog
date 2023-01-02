@@ -3,13 +3,13 @@
 [*] Sun Oct 30 17:00:39 2022
 [*]
 [dumpfile] "16.vcd"
-[dumpfile_mtime] "Sun Oct 30 16:55:30 2022"
-[dumpfile_size] 346235
+[dumpfile_mtime] "Tue Dec 27 23:21:27 2022"
+[dumpfile_size] 693617
 [savefile] "16.gtkw"
 [timestart] 0
 [size] 1536 937
 [pos] -9 -9
-*-15.808907 84900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-15.980082 84900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test.
 [treeopen] test.uart.
 [sst_width] 197
@@ -36,12 +36,12 @@ test.uart.rxInst.in_hold_reg[4:0]
 @1001200
 -group_end
 @22
+test.uart.rxInst.in_prior_hold_reg[3:0]
 test.uart.rxInst.sample_count[3:0]
 @28
 test.uart.rxInst.state[2:0]
 test.uart.rxInst.bit_index[2:0]
 test.uart.rxInst.received_data[7:0]
-@22
 test.uart.rxInst.out[7:0]
 [pattern_trace] 1
 [pattern_trace] 0

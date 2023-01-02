@@ -14,7 +14,7 @@
  *   (*change before {done} rising edge)
  *
  * Finer control over when to start the next frame is provided by cycling
- *   the {start} input low then driving it high
+ *   the {start} input low then high
  *
  * System clock must be divided down to the baud rate, which is the
  *   {clk} input
@@ -46,18 +46,26 @@ module Uart8Transmitter #(
     input wire [7:0] in, // parallel data to transmit
     output reg busy,     // transmit is in progress
     output reg done,     // end of transmission
-    output reg out       // tx line
+    output reg out       // tx line for serial data
 );
 
 reg [2:0] state     = `RESET;
 reg [7:0] in_data   = 8'b0; // shift reg for the data to transmit serially
 reg [2:0] bit_index = 3'b0; // index for 8-bit data
 
+/*
+ * Disable at any time in the flow
+ */
 always @(posedge clk) begin
     if (!en) begin
         state <= `RESET;
     end
+end
 
+/*
+ * State machine
+ */
+always @(posedge clk) begin
     case (state)
         `RESET: begin
             // state variables
@@ -65,7 +73,7 @@ always @(posedge clk) begin
             // outputs
             busy      <= 1'b0;
             done      <= 1'b0;
-            out       <= 1'b1; // line is high for IDLE state
+            out       <= 1'b1; // drive the line high for IDLE state
             // next state
             if (en) begin
                 state <= `IDLE;

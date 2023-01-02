@@ -46,6 +46,7 @@ initial begin
 
 // #65 == 1 rx clock period (approximately) at 9600 baud
 // #1042 == 16 rx clock periods (approximately)
+// #1075 instead of #1042 makes transmit clock sync with receive clock (a 3% difference)
 #240
   en_1 = 1'b1;
   txByte_1 = 8'b00110101;
@@ -55,27 +56,45 @@ initial begin
   rx = 1'b1;
 #240
   rx = 1'b0;
-#1042
+
+  $display("%7.4fms | rx start bit: %1b", $realtime/10000, rx);
+#1075
   rx = txByte_1[0];
 
-  $display("%7.2fms | rx first bit: %1b", $realtime/10000, rx);
-#1042
+  $display("%7.4fms | rx first bit: %1b", $realtime/10000, rx);
+#1075
   rx = txByte_1[1];
 
   $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
-#1042
+#1075
   rx = txByte_1[2];
 
   $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
-#1042
+#1075
   rx = txByte_1[3];
 
   $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
-#1042
+#1075
   rx = txByte_1[4];
 
   $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
-#0
+#1075
+  rx = txByte_1[5];
+
+  $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
+#1075
+  rx = txByte_1[6];
+
+  $display("%7.2fms | rx next bit: %1b", $realtime/10000, rx);
+#1075
+  rx = txByte_1[7];
+
+  $display("%7.4fms | rx last bit: %1b", $realtime/10000, rx);
+#1075
+  rx = 1'b1;
+
+  $display("%7.4fms | rx stop bit: %1b", $realtime/10000, rx);
+#1400
 
   $finish();
 end

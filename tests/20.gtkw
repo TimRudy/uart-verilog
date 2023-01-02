@@ -3,13 +3,13 @@
 [*] Sun Nov 13 01:12:54 2022
 [*]
 [dumpfile] "20.vcd"
-[dumpfile_mtime] "Sun Nov 13 01:11:49 2022"
-[dumpfile_size] 669405
+[dumpfile_mtime] "Tue Dec 27 23:52:54 2022"
+[dumpfile_size] 669427
 [savefile] "20.gtkw"
 [timestart] 555000
 [size] 1536 937
 [pos] -9 -9
-*-16.833487 1039100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.833487 1061800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test.
 [treeopen] test.uart.
 [sst_width] 197

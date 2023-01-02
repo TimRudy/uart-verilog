@@ -87,20 +87,20 @@ initial begin
   rx = txByte_1[7];
 
   $display("%7.2fms | rx last bit: %1b", $realtime/10000, rx);
-#800
+#900
   rx = 1'b1;
 
-  $display("%7.4fms | rx stop bit", $realtime/10000); // note change back to .2
-#540
-  // here in_sample registers low at sample_count == 8
+  $display("%7.4fms | rx stop bit", $realtime/10000);
+#440
+  // here in_sample registers low at sample_count == 7
   rx = 1'b0;
 
   $display("%7.4fms | rx stop bit glitch", $realtime/10000);
-#280
+#350
   rx = 1'b1;
 
   $display("%7.4fms | rx stop bit done", $realtime/10000);
-#720
+#650
 
   $finish();
 end

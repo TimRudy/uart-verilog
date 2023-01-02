@@ -85,7 +85,7 @@ always #SIM_TIMESTEP_FACTOR clk = ~clk;
 initial c = 1;
 
 always @(posedge uart1.txClk) begin
-  // drive the start signal low synchronously from the last done signal
+  // drive the start signal low synchronously from the last tx done signal
   if (txDone_1) begin
     c <= c + 1;
     if (c == 2) begin

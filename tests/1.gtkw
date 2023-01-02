@@ -3,12 +3,12 @@
 [*] Sun Oct 16 19:14:34 2022
 [*]
 [dumpfile] "1.vcd"
-[dumpfile_mtime] "Sun Oct 16 19:12:30 2022"
-[dumpfile_size] 1790532
+[dumpfile_mtime] "Fri Dec 23 16:04:41 2022"
+[dumpfile_size] 1792051
 [savefile] "1.gtkw"
 [timestart] 0
 [size] 1536 937
-[pos] -1 -1
+[pos] -9 -9
 *-18.545267 1555000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] test.
 [treeopen] test.uart1.

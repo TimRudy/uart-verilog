@@ -87,7 +87,7 @@ initial begin
   rx = txByte_1[7];
 
   $display("%7.2fms | rx last bit: %1b", $realtime/10000, rx);
-#530
+#600
   rx = 1'b1;
 #1580
   rx = 1'b0;

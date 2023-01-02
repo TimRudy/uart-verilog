@@ -92,7 +92,7 @@ initial begin
 
   $display("%7.4fms | rx stop bit", $realtime/10000);
 #300
-  // here in_sample registers low at sample_count == 4
+  // here in_sample registers low at sample_count == 3
   rx = 1'b0;
 
   $display("%7.4fms | rx stop bit glitch", $realtime/10000);
