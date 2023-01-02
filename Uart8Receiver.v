@@ -107,7 +107,12 @@ always @(posedge clk) begin
             // outputs
             busy           <= 1'b0;
             done           <= 1'b0;
-            err            <= 1'b0;
+            if (en && err && !in_sample) begin // in error condition already -
+                // leave the output uninterrupted
+                err        <= 1'b1;
+            end else begin
+                err        <= 1'b0;
+            end
             out            <= 8'b0; // output parallel data only during {done}
             // next state
             if (en) begin

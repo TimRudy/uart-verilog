@@ -1,0 +1,55 @@
+[*]
+[*] GTKWave Analyzer v3.3.81 (w)1999-2017 BSI
+[*] Sun Jan 01 23:26:14 2023
+[*]
+[dumpfile] "30.vcd"
+[dumpfile_mtime] "Sun Jan 01 23:25:38 2023"
+[dumpfile_size] 873907
+[savefile] "30.gtkw"
+[timestart] 704900
+[size] 1536 937
+[pos] -9 -9
+*-16.818604 1054500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test.
+[treeopen] test.uart.
+[sst_width] 197
+[signals_width] 290
+[sst_expanded] 1
+[sst_vpaned_height] 444
+@28
+test.txByte_1[7:0]
+test.rx
+test.uart.rxInst.clk
+test.uart.rxInst.en
+test.uart.rxInst.busy
+test.uart.rxInst.done
+test.uart.rxInst.err
+test.uart.rxInst.in_sample
+@c00022
+test.uart.rxInst.in_prior_hold_reg[3:0]
+@28
+(0)test.uart.rxInst.in_prior_hold_reg[3:0]
+(1)test.uart.rxInst.in_prior_hold_reg[3:0]
+(2)test.uart.rxInst.in_prior_hold_reg[3:0]
+(3)test.uart.rxInst.in_prior_hold_reg[3:0]
+@1401200
+-group_end
+@c00022
+test.uart.rxInst.in_current_hold_reg[3:0]
+@28
+(0)test.uart.rxInst.in_current_hold_reg[3:0]
+(1)test.uart.rxInst.in_current_hold_reg[3:0]
+(2)test.uart.rxInst.in_current_hold_reg[3:0]
+(3)test.uart.rxInst.in_current_hold_reg[3:0]
+@1401200
+-group_end
+@22
+test.uart.rxInst.sample_count[3:0]
+test.uart.rxInst.out_hold_count[4:0]
+@28
+test.uart.rxInst.state[2:0]
+test.uart.rxInst.bit_index[2:0]
+test.uart.rxInst.received_data[7:0]
+test.uart.rxInst.out[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
