@@ -135,6 +135,7 @@ always @(posedge clk) begin
                         // meets the preceding min high hold time -
                         // note that {done} && !{err} encodes the fact that
                         // the min hold time was met earlier in STOP_BIT state
+                        // or READY state
                         sample_count  <= 4'b1;
                         err           <= 1'b0;
                     end else begin
@@ -256,17 +257,45 @@ always @(posedge clk) begin
              * Wait one full bit cycle to sustain the {out} data, the
              *   {done} signal or the {err} signal
              */
-            sample_count       <= sample_count + 4'b1;
-            if (!err && !in_sample) begin
-                // accept the trigger to start, right from stop signal high
-                // (in this case transmit signaling of {done} is in progress)
-                sample_count   <= 4'b1;
-                out_hold_count <= sample_count + 5'b00010; // continue counting
-                state          <= `IDLE;
+            sample_count              <= sample_count + 4'b1;
+            if (!err && !in_sample || &sample_count) begin
+                // check if this is the change to a start signal -
+                // in_sample has met the min high hold time
+                // any time it drops to low in this state
+                // (also in these cases, namely !{err} or tick 15 special case,
+                //  signaling of {done} is in progress)
+                if (&sample_count) begin // reached 15, last tick, and no error
+                    // (signaling of {done} is now complete)
+                    if (in_sample) begin
+                        // not transitioning to start bit -
+                        // sample_count wraps around to zero
+                        received_data <= 8'b0;
+                        busy          <= 1'b0;
+                    end else begin
+                        // transitioning to start bit -
+                        // sustain the {busy} signal high
+                        sample_count  <= 4'b1;
+                    end
+                    done              <= 1'b0;
+                    out               <= 8'b0;
+                    state             <= `IDLE;
+                end else begin
+                    // in_sample drops from high to low
+                    // (signaling of {done} continues)
+                    sample_count      <= 4'b1;
+                    // continue the counting
+                    out_hold_count    <= sample_count + 5'b00010;
+                    state             <= `IDLE;
+                end
             end else if (&sample_count[3:1]) begin // reached 14 -
                 // additional tick 15 comes from transitting the READY state
                 // to get to the RESET state
-                state          <= `RESET;
+                if (err || !in_sample) begin
+                    state             <= `RESET;
+                end
+                // otherwise, signaling of {done} is in progress (i.e. !{err}) -
+                // in this case, on tick 15, will be checking if in_sample
+                // dropped from high to low on the entry to IDLE state
             end
         end
 

@@ -25,6 +25,6 @@
 25. One frame, and next xaction starts after minimum required length of stop bit (no READY state): success (*shows done sustained for 16-tick cycle)
 26. Error at beginning of next xaction due to rx start signal not meeting its requirement: success accepting previous xaction (*shows done sustained for 16-tick cycle, shows err can overlap)
 27. One frame, and next xaction starts during the READY state: success
-28: One frame, next xaction does not start in READY state, goes to RESET state: fail to start second xaction because rx stop signal too long (*shows err)
+28: One frame, and next xaction starts on very last tick of the READY state: success (*shows done sustained for 16-tick cycle)
 29. Error at beginning of next xaction due to rx start signal not long enough to meet its extra hold requirement: success accepting previous xaction (*shows done, shows err)
 30. Error at end of xaction held over to beginning of next xaction: fail to accept, fail to start (*shows err sustained high, no glitch low-high)
