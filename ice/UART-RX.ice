@@ -15,76 +15,83 @@
           "id": "aef86b17-5dea-4001-9cce-0fc7f1c58c33",
           "type": "basic.output",
           "data": {
-            "name": "busy"
+            "name": "busy",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": -40
+            "x": 1064,
+            "y": 0
           }
         },
         {
           "id": "49ed377b-71f0-4d1b-a73b-62a59341ca8b",
           "type": "basic.output",
           "data": {
-            "name": "done"
+            "name": "done",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 40
+            "x": 1064,
+            "y": 72
           }
         },
         {
           "id": "5fb29465-2ee7-45bb-afa4-9a3de895c774",
           "type": "basic.input",
           "data": {
-            "name": "clk"
+            "name": "clk",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 104
+            "x": 40,
+            "y": 96
           }
         },
         {
           "id": "c2df35e2-6b64-4b6b-b29b-9d66b6115158",
           "type": "basic.output",
           "data": {
-            "name": "err"
+            "name": "err",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 120
+            "x": 1064,
+            "y": 144
           }
         },
         {
           "id": "531f63ad-0c27-425d-82de-96e038bf38ec",
           "type": "basic.output",
           "data": {
-            "name": "0"
+            "name": "0",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 200
+            "x": 1064,
+            "y": 216
           }
         },
         {
           "id": "01c30fd4-6162-425e-9af0-2f40273021fa",
           "type": "basic.output",
           "data": {
-            "name": "1"
+            "name": "1",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 280
+            "x": 1064,
+            "y": 288
           }
         },
         {
           "id": "d8b15464-d969-44c9-a552-8595159c68f2",
           "type": "basic.input",
           "data": {
-            "name": "en"
+            "name": "en",
+            "virtual": true
           },
           "position": {
-            "x": 32,
+            "x": 40,
             "y": 360
           }
         },
@@ -92,10 +99,11 @@
           "id": "0a0ab721-9757-4d4f-8e2e-3a88705e9b4a",
           "type": "basic.output",
           "data": {
-            "name": "2"
+            "name": "2",
+            "virtual": true
           },
           "position": {
-            "x": 816,
+            "x": 1064,
             "y": 360
           }
         },
@@ -103,73 +111,79 @@
           "id": "adcee644-48c7-43eb-9b41-1b32fe1de528",
           "type": "basic.output",
           "data": {
-            "name": "3"
+            "name": "3",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 440
+            "x": 1064,
+            "y": 432
           }
         },
         {
           "id": "fd0dc34b-b072-457b-a8c3-d4c4c7328c64",
           "type": "basic.output",
           "data": {
-            "name": "4"
+            "name": "4",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 520
+            "x": 1064,
+            "y": 504
           }
         },
         {
           "id": "5db2bba7-96ff-46e1-8de2-7a4eaaf3e5dd",
           "type": "basic.output",
           "data": {
-            "name": "5"
+            "name": "5",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 600
+            "x": 1064,
+            "y": 576
           }
         },
         {
           "id": "c3f73f68-1074-4355-b69f-6a20f7bea3e7",
           "type": "basic.input",
           "data": {
-            "name": "in"
+            "name": "in",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 608
+            "x": 40,
+            "y": 624
           }
         },
         {
           "id": "bc0704e9-562e-4fdb-9f7c-bdbca58bace9",
           "type": "basic.output",
           "data": {
-            "name": "6"
+            "name": "6",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 680
+            "x": 1064,
+            "y": 648
           }
         },
         {
           "id": "23a749aa-fde8-435e-9725-60039358a879",
           "type": "basic.output",
           "data": {
-            "name": "7"
+            "name": "7",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 760
+            "x": 1064,
+            "y": 720
           }
         },
         {
           "id": "ba573190-2ead-411a-a323-1b15a22d46db",
           "type": "basic.code",
           "data": {
-            "code": "/*\n * 8-bit UART Receiver\n *\n * Able to receive 8 bits of serial data, one start bit, one stop bit\n *\n * When receive is detected and in progress over {in}, {busy} is driven high\n *\n * When receive is complete, {done} is driven high for one serial bit cycle\n *   (aka baud interval: equal to 16 {clk} ticks)\n *\n * Output data should be taken away within one baud interval or it will be lost\n *\n * System clock must be divided down to oversampling rate times baud rate\n *   to provide the {clk} input\n *\n * (*Note this module's logic is hard-coded based on 16x oversampling rate)\n */\n\n// states of state machine\n`define RESET     3'b000\n`define IDLE      3'b001\n`define START_BIT 3'b010\n`define DATA_BITS 3'b011\n`define STOP_BIT  3'b100\n`define READY     3'b101\n\nwire clk;\nwire en;\nwire in;\nreg busy;\nreg done;\nreg err;\nreg [7:0] out;\n\nreg [2:0] state          = `RESET;\nreg [1:0] in_reg         = 2'b0; // shift reg for input signal conditioning\nreg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks\nreg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample\nreg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data\nreg [2:0] bit_index      = 3'b0; // index for 8-bit data\nreg [7:0] received_data  = 8'b0; // shift reg for the deserialized data\nwire in_sample;\nwire [3:0] in_prior_hold_reg;\nwire [3:0] in_current_hold_reg;\n\n/*\n * Double-register the incoming data:\n *\n * This prevents metastability problems crossing into rx clock domain\n *\n * After registering, only the in_sample wire is to be accessed - the\n *   earlier, unconditioned signal {in} must be ignored\n */\nalways @(posedge clk) begin\n    in_reg <= { in_reg[0], in };\nend\n\nassign in_sample = in_reg[1];\n\n/*\n * Track the incoming data for 4 rx {clk} ticks + 1, to be able to enforce a\n *   minimum hold time of 4 {clk} ticks for any rx signal\n */\nalways @(posedge clk) begin\n    in_hold_reg <= { in_hold_reg[3:1], in_sample, in_reg[0] };\nend\n\nassign in_prior_hold_reg   = in_hold_reg[4:1];\nassign in_current_hold_reg = in_hold_reg[3:0];\n\n/*\n * End the validity of output data after precise time of one serial bit cycle:\n *\n * Output signals from this module might as well be consistent with input\n *   rate, which is the baud rate\n *\n * This hold is for the case when detection of a next transmit cut the\n *   prior stop and ready transitions short; i.e. IDLE state has been entered\n *   direct from STOP_BIT state or READY state\n */\nalways @(posedge clk) begin\n    if (|out_hold_count) begin\n        out_hold_count     <= out_hold_count + 5'b1;\n        if (out_hold_count == 5'b10000) begin // reached 16 -\n            // timed output interval ends\n            out_hold_count <= 5'b0;\n            done           <= 1'b0;\n            out            <= 8'b0;\n        end\n    end\nend\n\n/*\n * Disable at any time in the flow\n */\nalways @(posedge clk) begin\n    if (!en) begin\n        state <= `RESET;\n    end\nend\n\n/*\n * State machine\n */\nalways @(posedge clk) begin\n    case (state)\n        `RESET: begin\n            // state variables\n            sample_count   <= 4'b0;\n            out_hold_count <= 5'b0;\n            received_data  <= 8'b0;\n            // outputs\n            busy           <= 1'b0;\n            done           <= 1'b0;\n            if (en && err && !in_sample) begin // in error condition already -\n                // leave the output uninterrupted\n                err        <= 1'b1;\n            end else begin\n                err        <= 1'b0;\n            end\n            out            <= 8'b0; // output parallel data only during {done}\n            // next state\n            if (en) begin\n                state      <= `IDLE;\n            end\n        end\n\n        `IDLE: begin\n            /*\n             * Accept low-going input as the trigger to start:\n             *\n             * Count from the first low sample, and sample again at the\n             *   mid-point of a full baud interval to accept the low signal\n             *\n             * Then start the count for the proceeding full baud intervals\n             */\n            if (!in_sample) begin\n                if (sample_count == 4'b0) begin\n                    if (&in_prior_hold_reg || done && !err) begin\n                        // meets the preceding min high hold time -\n                        // note that {done} && !{err} encodes the fact that\n                        // the min hold time was met earlier in STOP_BIT state\n                        // or READY state\n                        sample_count  <= 4'b1;\n                        err           <= 1'b0;\n                    end else begin\n                        // this was a false start -\n                        // remain in IDLE state with sample_count zero\n                        err           <= 1'b1;\n                    end\n                end else begin\n                    sample_count      <= sample_count + 4'b1;\n                    if (sample_count == 4'b1100) begin // reached 12\n                        // start signal meets an additional hold time\n                        // of >= 4 rx ticks after its own mid-point -\n                        // start new full interval count but from the mid-point\n                        sample_count  <= 4'b0100;\n                        busy          <= 1'b1;\n                        err           <= 1'b0;\n                        state         <= `START_BIT;\n                    end\n                end\n            end else if (|sample_count) begin\n                // bit did not remain low while waiting till 8 then 12 -\n                // remain in IDLE state\n                sample_count          <= 4'b0;\n                received_data         <= 8'b0;\n                err                   <= 1'b1;\n            end\n        end\n\n        `START_BIT: begin\n            /*\n             * Wait one full baud interval to the mid-point of first bit\n             */\n            sample_count      <= sample_count + 4'b1;\n            if (&sample_count) begin // reached 15\n                // sample_count wraps around to zero\n                bit_index     <= 3'b1;\n                received_data <= { in_sample, 7'b0 };\n                out           <= 8'b0;\n                state         <= `DATA_BITS;\n            end\n        end\n\n        `DATA_BITS: begin\n            /*\n             * Take 8 baud intervals to receive serial data\n             */\n            sample_count      <= sample_count + 4'b1;\n            if (&sample_count) begin // reached 15 - save one more bit of data\n                // store the bit using a shift register: the hardware\n                // realization is simple compared to routing the bit\n                // dynamically, i.e. using received_data[bit_index]\n                received_data <= { in_sample, received_data[7:1] };\n                // manage the state transition\n                bit_index     <= bit_index + 3'b1;\n                if (&bit_index) begin\n                    // bit_index wraps around to zero\n                    // sample_count wraps around to zero\n                    state     <= `STOP_BIT;\n                end\n            end\n        end\n\n        `STOP_BIT: begin\n            /*\n             * Accept the received data if input goes high:\n             *\n             * If stop signal condition(s) met, drive the {done} signal high\n             *   for one bit cycle\n             *\n             * Otherwise drive the {err} signal high for one bit cycle\n             *\n             * Since this baud clock may not track the transmitter baud clock\n             *   precisely in reality, accept the transition to handling the\n             *   next start bit any time after the stop bit mid-point\n             */\n            sample_count               <= sample_count + 4'b1;\n            if (sample_count[3]) begin // reached 8 to 15\n                if (!in_sample) begin\n                    // accept that transmit has completed only if the stop\n                    // signal held for a time of >= 4 rx ticks before it\n                    // changed to a start signal\n                    if (sample_count == 4'b1000 &&\n                            &in_prior_hold_reg) begin // meets the hold time\n                        // can accept the transmitted data and output it\n                        sample_count   <= 4'b0;\n                        out_hold_count <= 5'b1;\n                        done           <= 1'b1;\n                        out            <= received_data;\n                        state          <= `IDLE;\n                    end else if (&sample_count) begin // reached 15\n                        // bit did not go high or remain high -\n                        // signal {err}, continuing until condition resolved\n                        sample_count   <= 4'b0;\n                        received_data  <= 8'b0;\n                        busy           <= 1'b0;\n                        err            <= 1'b1;\n                        state          <= `IDLE;\n                    end\n                end else begin\n                    if (&in_current_hold_reg) begin // meets min high hold time\n                        // can accept the transmitted data and output it\n                        sample_count   <= 4'b0;\n                        done           <= 1'b1;\n                        out            <= received_data;\n                        state          <= `READY;\n                    end else if (&sample_count) begin // reached 15\n                        // did not meet min high hold time -\n                        // signal {err} for this transmit\n                        sample_count   <= 4'b0;\n                        err            <= 1'b1;\n                        state          <= `READY;\n                    end\n                end\n            end\n        end\n\n        `READY: begin\n            /*\n             * Wait one full bit cycle to sustain the {out} data, the\n             *   {done} signal or the {err} signal\n             */\n            sample_count              <= sample_count + 4'b1;\n            if (!err && !in_sample || &sample_count) begin\n                // check if this is the change to a start signal -\n                // in_sample has met the min high hold time\n                // any time it drops to low in this state\n                // (also in these cases, namely !{err} or tick 15 special case,\n                //  signaling of {done} is in progress)\n                if (&sample_count) begin // reached 15, last tick, and no error\n                    // (signaling of {done} is now complete)\n                    if (in_sample) begin\n                        // not transitioning to start bit -\n                        // sample_count wraps around to zero\n                        received_data <= 8'b0;\n                        busy          <= 1'b0;\n                    end else begin\n                        // transitioning to start bit -\n                        // sustain the {busy} signal high\n                        sample_count  <= 4'b1;\n                    end\n                    done              <= 1'b0;\n                    out               <= 8'b0;\n                    state             <= `IDLE;\n                end else begin\n                    // in_sample drops from high to low\n                    // (signaling of {done} continues)\n                    sample_count      <= 4'b1;\n                    // continue the counting\n                    out_hold_count    <= sample_count + 5'b00010;\n                    state             <= `IDLE;\n                end\n            end else if (&sample_count[3:1]) begin // reached 14 -\n                // additional tick 15 comes from transitting the READY state\n                // to get to the RESET state\n                if (err || !in_sample) begin\n                    state             <= `RESET;\n                end\n                // otherwise, signaling of {done} is in progress (i.e. !{err}) -\n                // in this case, on tick 15, will be checking if in_sample\n                // dropped from high to low on the entry to IDLE state\n            end\n        end\n\n        default: begin\n            state <= `RESET;\n        end\n    endcase\nend\n\nassign clk       = pin1_clk;\nassign en        = pin2_en;\nassign in        = pin3_in;\nassign pin4_busy = busy;\nassign pin5_done = done;\nassign pin6_err  = err;\nassign {pin15_7, pin14_6, pin13_5, pin12_4, pin11_3, pin10_2, pin9_1, pin7_0} = out;\n",
+            "code": "/*\n * 8-bit UART Receiver\n *\n * Able to receive 8 bits of serial data, one start bit, one stop bit\n *\n * When receive is detected and in progress over {in}, {busy} is driven high\n *\n * When receive is complete, {done} is driven high for one serial bit cycle\n *   (aka baud interval: equal to 16 {clk} ticks)\n *\n * Output data should be taken away within one baud interval or it will be lost\n *\n * System clock must be divided down to oversampling rate times baud rate\n *   to provide the {clk} input\n *\n * (*Note this module's logic is hard-coded based on 16x oversampling rate)\n */\n\n// states of state machine\n`define RESET     3'b000\n`define IDLE      3'b001\n`define START_BIT 3'b010\n`define DATA_BITS 3'b011\n`define STOP_BIT  3'b100\n`define READY     3'b101\n\nwire clk;\nwire en;\nwire in;\nreg busy;\nreg done;\nreg err;\nreg [7:0] out;\n\nreg [2:0] state          = `RESET;\nreg [1:0] in_reg         = 2'b0; // shift reg for input signal conditioning\nreg [4:0] in_hold_reg    = 5'b0; // shift reg for signal hold time checks\nreg [3:0] sample_count   = 4'b0; // count ticks for 16x oversample\nreg [4:0] out_hold_count = 5'b0; // count ticks before clearing output data\nreg [2:0] bit_index      = 3'b0; // index for 8-bit data\nreg [7:0] received_data  = 8'b0; // shift reg for the deserialized data\nwire in_sample;\nwire [3:0] in_prior_hold_reg;\nwire [3:0] in_current_hold_reg;\n\n/*\n * Double-register the incoming data:\n *\n * This prevents metastability problems crossing into rx clock domain\n *\n * After registering, only the in_sample wire is to be accessed - the\n *   earlier, unconditioned signal {in} must be ignored\n */\nalways @(posedge clk) begin\n    in_reg <= { in_reg[0], in };\nend\n\nassign in_sample = in_reg[1];\n\n/*\n * Track the incoming data for 4 rx {clk} ticks + 1, to be able to enforce a\n *   minimum hold time of 4 {clk} ticks for any rx signal\n */\nalways @(posedge clk) begin\n    in_hold_reg <= { in_hold_reg[3:1], in_sample, in_reg[0] };\nend\n\nassign in_prior_hold_reg   = in_hold_reg[4:1];\nassign in_current_hold_reg = in_hold_reg[3:0];\n\n/*\n * End the validity of output data after precise time of one serial bit cycle:\n *\n * Output signals from this module might as well be consistent with input\n *   rate, which is the baud rate\n *\n * This hold is for the case when detection of a next transmit cut the\n *   prior stop and ready transitions short; i.e. IDLE state has been entered\n *   direct from STOP_BIT state or READY state\n */\nalways @(posedge clk) begin\n    if (|out_hold_count) begin\n        out_hold_count     <= out_hold_count + 5'b1;\n        if (out_hold_count == 5'b10000) begin // reached 16 -\n            // timed output interval ends\n            out_hold_count <= 5'b0;\n            done           <= 1'b0;\n            out            <= 8'b0;\n        end\n    end\nend\n\n/*\n * Disable at any time in the flow\n */\nalways @(posedge clk) begin\n    if (!en) begin\n        state <= `RESET;\n    end\nend\n\n/*\n * State machine\n */\nalways @(posedge clk) begin\n    case (state)\n        `RESET: begin\n            // state variables\n            sample_count   <= 4'b0;\n            out_hold_count <= 5'b0;\n            received_data  <= 8'b0;\n            // outputs\n            busy           <= 1'b0;\n            done           <= 1'b0;\n            if (en && err && !in_sample) begin // in error condition already -\n                // leave the output uninterrupted\n                err        <= 1'b1;\n            end else begin\n                err        <= 1'b0;\n            end\n            out            <= 8'b0; // output parallel data only during {done}\n            // next state\n            if (en) begin\n                state      <= `IDLE;\n            end\n        end\n\n        `IDLE: begin\n            /*\n             * Accept low-going input as the trigger to start:\n             *\n             * Count from the first low sample, and sample again at the\n             *   mid-point of a full baud interval to accept the low signal\n             *\n             * Then start the count for the proceeding full baud intervals\n             */\n            if (!in_sample) begin\n                if (sample_count == 4'b0) begin\n                    if (&in_prior_hold_reg || done && !err) begin\n                        // meets the preceding min high hold time -\n                        // note that {done} && !{err} encodes the fact that\n                        // the min hold time was met earlier in STOP_BIT state\n                        // or READY state\n                        sample_count  <= 4'b1;\n                        err           <= 1'b0;\n                    end else begin\n                        // this was a false start -\n                        // remain in IDLE state with sample_count zero\n                        err           <= 1'b1;\n                    end\n                end else begin\n                    sample_count      <= sample_count + 4'b1;\n                    if (sample_count == 4'b1100) begin // reached 12\n                        // start signal meets an additional hold time\n                        // of >= 4 rx ticks after its own mid-point -\n                        // start new full interval count but from the mid-point\n                        sample_count  <= 4'b0100;\n                        busy          <= 1'b1;\n                        err           <= 1'b0;\n                        state         <= `START_BIT;\n                    end\n                end\n            end else if (|sample_count) begin\n                // bit did not remain low while waiting till 8 then 12 -\n                // remain in IDLE state\n                sample_count          <= 4'b0;\n                received_data         <= 8'b0;\n                err                   <= 1'b1;\n            end\n        end\n\n        `START_BIT: begin\n            /*\n             * Wait one full baud interval to the mid-point of first bit\n             */\n            sample_count      <= sample_count + 4'b1;\n            if (&sample_count) begin // reached 15\n                // sample_count wraps around to zero\n                bit_index     <= 3'b1;\n                received_data <= { in_sample, 7'b0 };\n                out           <= 8'b0;\n                state         <= `DATA_BITS;\n            end\n        end\n\n        `DATA_BITS: begin\n            /*\n             * Take 8 baud intervals to receive serial data\n             */\n            sample_count      <= sample_count + 4'b1;\n            if (&sample_count) begin // reached 15 - save one more bit of data\n                // store the bit using a shift register: the hardware\n                // realization is simple compared to routing the bit\n                // dynamically, i.e. using received_data[bit_index]\n                received_data <= { in_sample, received_data[7:1] };\n                // manage the state transition\n                bit_index     <= bit_index + 3'b1;\n                if (&bit_index) begin\n                    // bit_index wraps around to zero\n                    // sample_count wraps around to zero\n                    state     <= `STOP_BIT;\n                end\n            end\n        end\n\n        `STOP_BIT: begin\n            /*\n             * Accept the received data if input goes high:\n             *\n             * If stop signal condition(s) met, drive the {done} signal high\n             *   for one bit cycle\n             *\n             * Otherwise drive the {err} signal high for one bit cycle\n             *\n             * Since this baud clock may not track the transmitter baud clock\n             *   precisely in reality, accept the transition to handling the\n             *   next start bit any time after the stop bit mid-point\n             */\n            sample_count               <= sample_count + 4'b1;\n            if (sample_count[3]) begin // reached 8 to 15\n                if (!in_sample) begin\n                    // accept that transmit has completed only if the stop\n                    // signal held for a time of >= 4 rx ticks before it\n                    // changed to a start signal\n                    if (sample_count == 4'b1000 &&\n                            &in_prior_hold_reg) begin // meets the hold time\n                        // can accept the transmitted data and output it\n                        sample_count   <= 4'b0;\n                        out_hold_count <= 5'b1;\n                        done           <= 1'b1;\n                        out            <= received_data;\n                        state          <= `IDLE;\n                    end else if (&sample_count) begin // reached 15\n                        // bit did not go high or remain high -\n                        // signal {err}, continuing until condition resolved\n                        sample_count   <= 4'b0;\n                        received_data  <= 8'b0;\n                        busy           <= 1'b0;\n                        err            <= 1'b1;\n                        state          <= `IDLE;\n                    end\n                end else begin\n                    if (&in_current_hold_reg) begin // meets min high hold time\n                        // can accept the transmitted data and output it\n                        sample_count   <= 4'b0;\n                        done           <= 1'b1;\n                        out            <= received_data;\n                        state          <= `READY;\n                    end else if (&sample_count) begin // reached 15\n                        // did not meet min high hold time -\n                        // signal {err} for this transmit\n                        sample_count   <= 4'b0;\n                        err            <= 1'b1;\n                        state          <= `READY;\n                    end\n                end\n            end\n        end\n\n        `READY: begin\n            /*\n             * Wait one full bit cycle to sustain the {out} data, the\n             *   {done} signal or the {err} signal\n             */\n            sample_count              <= sample_count + 4'b1;\n            if (!err && !in_sample || &sample_count) begin\n                // check if this is the change to a start signal -\n                // in_sample has met the min high hold time\n                // any time it drops to low in this state\n                // (also in these cases, namely !{err} or tick 15 special case,\n                //  signaling of {done} is in progress)\n                if (&sample_count) begin // reached 15, last tick, and no error\n                    // (signaling of {done} is now complete)\n                    if (in_sample) begin\n                        // not transitioning to start bit -\n                        // sample_count wraps around to zero\n                        received_data <= 8'b0;\n                        busy          <= 1'b0;\n                    end else begin\n                        // transitioning to start bit -\n                        // sustain the {busy} signal high\n                        sample_count  <= 4'b1;\n                    end\n                    done              <= 1'b0;\n                    out               <= 8'b0;\n                    state             <= `IDLE;\n                end else begin\n                    // in_sample drops from high to low\n                    // (signaling of {done} continues)\n                    sample_count      <= 4'b1;\n                    // continue the counting\n                    out_hold_count    <= sample_count + 5'b00010;\n                    state             <= `IDLE;\n                end\n            end else if (&sample_count[3:1]) begin // reached 14 -\n                // additional tick 15 comes from transitting the READY state\n                // to get to the RESET state\n                if (err || !in_sample) begin\n                    state             <= `RESET;\n                end\n                // otherwise, signaling of {done} is in progress (i.e. !{err}) -\n                // in this case, on tick 15, will be checking if in_sample\n                // dropped from high to low on the entry to IDLE state\n            end\n        end\n\n        default: begin\n            state <= `RESET;\n        end\n    endcase\nend\n\nassign clk       = pin1_clk;\nassign en        = pin2_en;\nassign in        = pin3_in;\nassign pin4_busy = busy;\nassign pin5_done = done;\nassign pin6_err  = err;\nassign {pin14_7, pin13_6, pin12_5, pin11_4,\n            pin10_3, pin9_2, pin8_1, pin7_0} = out;\n",
             "params": [],
             "ports": {
               "in": [
@@ -197,36 +211,36 @@
                   "name": "pin7_0"
                 },
                 {
-                  "name": "pin9_1"
+                  "name": "pin8_1"
                 },
                 {
-                  "name": "pin10_2"
+                  "name": "pin9_2"
                 },
                 {
-                  "name": "pin11_3"
+                  "name": "pin10_3"
                 },
                 {
-                  "name": "pin12_4"
+                  "name": "pin11_4"
                 },
                 {
-                  "name": "pin13_5"
+                  "name": "pin12_5"
                 },
                 {
-                  "name": "pin14_6"
+                  "name": "pin13_6"
                 },
                 {
-                  "name": "pin15_7"
+                  "name": "pin14_7"
                 }
               ]
             }
           },
           "position": {
             "x": 280,
-            "y": 8
+            "y": 0
           },
           "size": {
-            "width": 388,
-            "height": 760
+            "width": 636,
+            "height": 784
           }
         }
       ],
@@ -304,7 +318,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin9_1"
+            "port": "pin8_1"
           },
           "target": {
             "block": "01c30fd4-6162-425e-9af0-2f40273021fa",
@@ -314,7 +328,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin10_2"
+            "port": "pin9_2"
           },
           "target": {
             "block": "0a0ab721-9757-4d4f-8e2e-3a88705e9b4a",
@@ -324,7 +338,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin11_3"
+            "port": "pin10_3"
           },
           "target": {
             "block": "adcee644-48c7-43eb-9b41-1b32fe1de528",
@@ -334,7 +348,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin12_4"
+            "port": "pin11_4"
           },
           "target": {
             "block": "fd0dc34b-b072-457b-a8c3-d4c4c7328c64",
@@ -344,7 +358,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin13_5"
+            "port": "pin12_5"
           },
           "target": {
             "block": "5db2bba7-96ff-46e1-8de2-7a4eaaf3e5dd",
@@ -354,7 +368,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin14_6"
+            "port": "pin13_6"
           },
           "target": {
             "block": "bc0704e9-562e-4fdb-9f7c-bdbca58bace9",
@@ -364,7 +378,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin15_7"
+            "port": "pin14_7"
           },
           "target": {
             "block": "23a749aa-fde8-435e-9725-60039358a879",

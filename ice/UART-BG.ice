@@ -12,43 +12,95 @@
     "graph": {
       "blocks": [
         {
+          "id": "01c30fd4-6162-425e-9af0-2f40273021fa",
+          "type": "basic.output",
+          "data": {
+            "name": "",
+            "virtual": true
+          },
+          "position": {
+            "x": 1056,
+            "y": 24
+          }
+        },
+        {
           "id": "aef86b17-5dea-4001-9cce-0fc7f1c58c33",
           "type": "basic.output",
           "data": {
-            "name": "rxClk"
+            "name": "rxClk",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 96
+            "x": 1056,
+            "y": 144
+          }
+        },
+        {
+          "id": "c2df35e2-6b64-4b6b-b29b-9d66b6115158",
+          "type": "basic.output",
+          "data": {
+            "name": "",
+            "virtual": true
+          },
+          "position": {
+            "x": 1056,
+            "y": 264
           }
         },
         {
           "id": "5fb29465-2ee7-45bb-afa4-9a3de895c774",
           "type": "basic.input",
           "data": {
-            "name": "clk"
+            "name": "clk",
+            "virtual": true,
+            "clock": true
           },
           "position": {
-            "x": 32,
-            "y": 216
+            "x": 40,
+            "y": 328
+          }
+        },
+        {
+          "id": "531f63ad-0c27-425d-82de-96e038bf38ec",
+          "type": "basic.output",
+          "data": {
+            "name": "",
+            "virtual": true
+          },
+          "position": {
+            "x": 1056,
+            "y": 384
           }
         },
         {
           "id": "49ed377b-71f0-4d1b-a73b-62a59341ca8b",
           "type": "basic.output",
           "data": {
-            "name": "txClk"
+            "name": "txClk",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 336
+            "x": 1056,
+            "y": 504
+          }
+        },
+        {
+          "id": "0a0ab721-9757-4d4f-8e2e-3a88705e9b4a",
+          "type": "basic.output",
+          "data": {
+            "name": "",
+            "virtual": true
+          },
+          "position": {
+            "x": 1056,
+            "y": 624
           }
         },
         {
           "id": "ba573190-2ead-411a-a323-1b15a22d46db",
           "type": "basic.code",
           "data": {
-            "code": "/*\n * Baud rate generator to divide {CLOCK_RATE} (internal system clock) into\n *   {BAUD_RATE} tx/rx pair, with rx oversample by default 16x\n */\n\nparameter CLOCK_RATE         = 100000000;\nparameter BAUD_RATE          = 9600;\nparameter RX_OVERSAMPLE_RATE = 16;\n\nlocalparam RX_ACC_MAX   = CLOCK_RATE / (2 * BAUD_RATE * RX_OVERSAMPLE_RATE);\nlocalparam TX_ACC_MAX   = CLOCK_RATE / (2 * BAUD_RATE);\nlocalparam RX_ACC_WIDTH = $clog2(RX_ACC_MAX);\nlocalparam TX_ACC_WIDTH = $clog2(TX_ACC_MAX);\n\nwire clk;\nreg rxClk;\nreg txClk;\n\nreg [RX_ACC_WIDTH-1:0] rx_counter = 0;\nreg [TX_ACC_WIDTH-1:0] tx_counter = 0;\n\ninitial begin\n    rxClk = 1'b0;\n    txClk = 1'b0;\nend\n\nalways @(posedge clk) begin\n    // rx clock\n    if (rx_counter == RX_ACC_MAX[RX_ACC_WIDTH-1:0]) begin\n        rx_counter <= 0;\n        rxClk      <= ~rxClk;\n    end else begin\n        rx_counter <= rx_counter + 1'b1;\n    end\n\n    // tx clock\n    if (tx_counter == TX_ACC_MAX[TX_ACC_WIDTH-1:0]) begin\n        tx_counter <= 0;\n        txClk      <= ~txClk;\n    end else begin\n        tx_counter <= tx_counter + 1'b1;\n    end\nend\n\nassign clk        = pin1_clk;\nassign pin8_rxClk = rxClk;\nassign pin9_txClk = txClk;\n",
+            "code": "/*\n * Baud rate generator to divide {CLOCK_RATE} (internal system clock) into\n *   {BAUD_RATE} tx/rx pair, with rx oversample by default 16x\n */\n\nparameter CLOCK_RATE         = 100000000;\nparameter BAUD_RATE          = 9600;\nparameter RX_OVERSAMPLE_RATE = 16;\n\nlocalparam RX_ACC_MAX   = CLOCK_RATE / (2 * BAUD_RATE * RX_OVERSAMPLE_RATE);\nlocalparam TX_ACC_MAX   = CLOCK_RATE / (2 * BAUD_RATE);\nlocalparam RX_ACC_WIDTH = $clog2(RX_ACC_MAX);\nlocalparam TX_ACC_WIDTH = $clog2(TX_ACC_MAX);\n\nwire clk;\nreg rxClk;\nreg txClk;\n\nreg [RX_ACC_WIDTH-1:0] rx_counter = 0;\nreg [TX_ACC_WIDTH-1:0] tx_counter = 0;\n\ninitial begin\n    rxClk = 1'b0;\n    txClk = 1'b0;\nend\n\nalways @(posedge clk) begin\n    // rx clock\n    if (rx_counter == RX_ACC_MAX[RX_ACC_WIDTH-1:0]) begin\n        rx_counter <= 0;\n        rxClk      <= ~rxClk;\n    end else begin\n        rx_counter <= rx_counter + 1'b1;\n    end\n\n    // tx clock\n    if (tx_counter == TX_ACC_MAX[TX_ACC_WIDTH-1:0]) begin\n        tx_counter <= 0;\n        txClk      <= ~txClk;\n    end else begin\n        tx_counter <= tx_counter + 1'b1;\n    end\nend\n\nassign clk        = pin1_clk;\nassign pin3_rxClk = rxClk;\nassign pin6_txClk = txClk;\n",
             "params": [],
             "ports": {
               "in": [
@@ -58,21 +110,33 @@
               ],
               "out": [
                 {
-                  "name": "pin8_rxClk"
+                  "name": "pin2_NC"
                 },
                 {
-                  "name": "pin9_txClk"
+                  "name": "pin3_rxClk"
+                },
+                {
+                  "name": "pin4_NC"
+                },
+                {
+                  "name": "pin5_NC"
+                },
+                {
+                  "name": "pin6_txClk"
+                },
+                {
+                  "name": "pin7_NC"
                 }
               ]
             }
           },
           "position": {
             "x": 280,
-            "y": 8
+            "y": 0
           },
           "size": {
-            "width": 388,
-            "height": 480
+            "width": 636,
+            "height": 712
           }
         }
       ],
@@ -90,7 +154,17 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin8_rxClk"
+            "port": "pin2_NC"
+          },
+          "target": {
+            "block": "01c30fd4-6162-425e-9af0-2f40273021fa",
+            "port": "in"
+          }
+        },
+        {
+          "source": {
+            "block": "ba573190-2ead-411a-a323-1b15a22d46db",
+            "port": "pin3_rxClk"
           },
           "target": {
             "block": "aef86b17-5dea-4001-9cce-0fc7f1c58c33",
@@ -100,10 +174,40 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin9_txClk"
+            "port": "pin4_NC"
+          },
+          "target": {
+            "block": "c2df35e2-6b64-4b6b-b29b-9d66b6115158",
+            "port": "in"
+          }
+        },
+        {
+          "source": {
+            "block": "ba573190-2ead-411a-a323-1b15a22d46db",
+            "port": "pin5_NC"
+          },
+          "target": {
+            "block": "531f63ad-0c27-425d-82de-96e038bf38ec",
+            "port": "in"
+          }
+        },
+        {
+          "source": {
+            "block": "ba573190-2ead-411a-a323-1b15a22d46db",
+            "port": "pin6_txClk"
           },
           "target": {
             "block": "49ed377b-71f0-4d1b-a73b-62a59341ca8b",
+            "port": "in"
+          }
+        },
+        {
+          "source": {
+            "block": "ba573190-2ead-411a-a323-1b15a22d46db",
+            "port": "pin7_NC"
+          },
+          "target": {
+            "block": "0a0ab721-9757-4d4f-8e2e-3a88705e9b4a",
             "port": "in"
           }
         }

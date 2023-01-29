@@ -15,76 +15,83 @@
           "id": "5fb29465-2ee7-45bb-afa4-9a3de895c774",
           "type": "basic.input",
           "data": {
-            "name": "clk"
+            "name": "clk",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": -40
+            "x": 40,
+            "y": 0
           }
         },
         {
           "id": "d8b15464-d969-44c9-a552-8595159c68f2",
           "type": "basic.input",
           "data": {
-            "name": "en"
+            "name": "en",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 40
+            "x": 40,
+            "y": 72
           }
         },
         {
           "id": "aef86b17-5dea-4001-9cce-0fc7f1c58c33",
           "type": "basic.output",
           "data": {
-            "name": "busy"
+            "name": "busy",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 104
+            "x": 1064,
+            "y": 96
           }
         },
         {
           "id": "c3f73f68-1074-4355-b69f-6a20f7bea3e7",
           "type": "basic.input",
           "data": {
-            "name": "start"
+            "name": "start",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 120
+            "x": 40,
+            "y": 144
           }
         },
         {
           "id": "23a749aa-fde8-435e-9725-60039358a879",
           "type": "basic.input",
           "data": {
-            "name": "0"
+            "name": "0",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 200
+            "x": 40,
+            "y": 216
           }
         },
         {
           "id": "ccae9959-b124-4705-9f3c-e5096e778874",
           "type": "basic.input",
           "data": {
-            "name": "1"
+            "name": "1",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 280
+            "x": 40,
+            "y": 288
           }
         },
         {
           "id": "49ed377b-71f0-4d1b-a73b-62a59341ca8b",
           "type": "basic.output",
           "data": {
-            "name": "done"
+            "name": "done",
+            "virtual": true
           },
           "position": {
-            "x": 816,
+            "x": 1064,
             "y": 360
           }
         },
@@ -92,10 +99,11 @@
           "id": "48d53bc7-1b53-4498-bf18-ae63e4247b78",
           "type": "basic.input",
           "data": {
-            "name": "2"
+            "name": "2",
+            "virtual": true
           },
           "position": {
-            "x": 32,
+            "x": 40,
             "y": 360
           }
         },
@@ -103,73 +111,79 @@
           "id": "87459eae-f0ce-443c-9f70-69b2f6d8c4e7",
           "type": "basic.input",
           "data": {
-            "name": "3"
+            "name": "3",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 440
+            "x": 40,
+            "y": 432
           }
         },
         {
           "id": "c5b212ae-5da3-4528-89b6-d3026cfdfa3e",
           "type": "basic.input",
           "data": {
-            "name": "4"
+            "name": "4",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 520
+            "x": 40,
+            "y": 504
           }
         },
         {
           "id": "2747ef06-ac6b-4d7b-b4db-9eac4e8b3ebe",
           "type": "basic.input",
           "data": {
-            "name": "5"
+            "name": "5",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 600
+            "x": 40,
+            "y": 576
           }
         },
         {
           "id": "c2df35e2-6b64-4b6b-b29b-9d66b6115158",
           "type": "basic.output",
           "data": {
-            "name": "out"
+            "name": "out",
+            "virtual": true
           },
           "position": {
-            "x": 816,
-            "y": 608
+            "x": 1064,
+            "y": 624
           }
         },
         {
           "id": "88fa3b89-57c4-4adc-81f8-f245b15c18a5",
           "type": "basic.input",
           "data": {
-            "name": "6"
+            "name": "6",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 680
+            "x": 40,
+            "y": 648
           }
         },
         {
           "id": "8b00bb53-1927-4fe7-b239-c308385ccd99",
           "type": "basic.input",
           "data": {
-            "name": "7"
+            "name": "7",
+            "virtual": true
           },
           "position": {
-            "x": 32,
-            "y": 760
+            "x": 40,
+            "y": 720
           }
         },
         {
           "id": "ba573190-2ead-411a-a323-1b15a22d46db",
           "type": "basic.code",
           "data": {
-            "code": "/*\n * 8-bit UART Transmitter\n *\n * Able to transmit 8 bits of serial data, one start bit, one stop bit\n *\n * When transmit is in progress over {out}, {busy} is driven high\n *\n * When transmit is complete, {done} is driven high for one tx clock cycle\n *\n * Capable of back-to-back transmits for full bandwidth utilization,\n *   by only changing the {in} data\n *   (*change before {done} rising edge)\n *\n * Finer control over when to start the next frame is provided by cycling\n *   the {start} input low then high\n *\n * System clock must be divided down to the baud rate, which is the\n *   {clk} input\n *\n * {TURBO_FRAMES}: performance mode versus forgiving mode:\n *\n * 0: forgiving mode:\n *    drive the mark state, aka stop bit, output high for two\n *    tx clock cycles instead of one - this way, the boundaries between\n *    data frames are distinguished in the transmitted data stream,\n *    for more robust sync between tx/rx\n *    (*sync can be re-established more quickly if it's lost)\n *    (*this mode will only have an effect in the max, back-to-back,\n *     frame transmission use case)\n *    (*this mode has no positive effect in an environment of\n *     reliably matched tx/rx baud clocks)\n *\n * 1: performance mode:\n *    drive the mark state output high for one cycle when at max rate\n *    (*this is the normal UART protocol: 80% effective data rate\n *     for 8 bits in a frame, no parity)\n */\n\n// states of state machine\n`define RESET     3'b000\n`define IDLE      3'b001\n`define START_BIT 3'b010\n`define DATA_BITS 3'b011\n`define STOP_BIT  3'b100\n\nlocalparam TURBO_FRAMES = 0;\n\nwire clk;\nwire en;\nwire start;\nwire [7:0] in;\nreg busy;\nreg done;\nreg out;\n\nreg [2:0] state     = `RESET;\nreg [7:0] in_data   = 8'b0; // shift reg for the data to transmit serially\nreg [2:0] bit_index = 3'b0; // index for 8-bit data\n\n/*\n * Disable at any time in the flow\n */\nalways @(posedge clk) begin\n    if (!en) begin\n        state <= `RESET;\n    end\nend\n\n/*\n * State machine\n */\nalways @(posedge clk) begin\n    case (state)\n        `RESET: begin\n            // state variables\n            bit_index <= 3'b0;\n            // outputs\n            busy      <= 1'b0;\n            done      <= 1'b0;\n            out       <= 1'b1; // drive the line high for IDLE state\n            // next state\n            if (en) begin\n                state <= `IDLE;\n            end\n        end\n\n        `IDLE: begin\n            if (start) begin\n                in_data <= in; // register the input data\n                state   <= `START_BIT;\n            end\n        end\n\n        `START_BIT: begin\n            bit_index <= 3'b0;\n            busy      <= 1'b1;\n            done      <= 1'b0;\n            out       <= 1'b0; // send the space output, aka start bit (low)\n            state     <= `DATA_BITS;\n        end\n\n        `DATA_BITS: begin // take 8 clock cycles for data bits to be sent\n            // grab each input bit using a shift register: the hardware\n            // realization is simple compared to routing the access\n            // dynamically, i.e. using in_data[bit_index]\n            in_data   <= { 1'b0, in_data[7:1] };\n            out       <= in_data[0];\n            // manage the state transition\n            bit_index <= bit_index + 3'b1;\n            if (&bit_index) begin\n                // bit_index wraps around to zero\n                state <= `STOP_BIT;\n            end\n        end\n\n        `STOP_BIT: begin\n            done              <= 1'b1; // signal the transmission stop\n            out               <= 1'b1; // transition to mark state output (high)\n            if (start) begin\n                if (done == 1'b0) begin // this distinguishes 2 sub-states\n                    in_data   <= in; // register new input data\n                    if (TURBO_FRAMES) begin\n                        state <= `START_BIT; // go direct to transmit\n                    end else begin\n                        state <= `STOP_BIT; // keep mark state one extra cycle\n                    end\n                end else begin // there was extra cycle within this state\n                    done      <= 1'b0;\n                    state     <= `START_BIT; // now go to transmit\n                end\n            end else begin\n                state         <= `RESET;\n            end\n        end\n\n        default: begin\n            state <= `RESET;\n        end\n    endcase\nend\n\nassign clk        = pin1_clk;\nassign en         = pin2_en;\nassign start      = pin3_start;\nassign in         = {pin12_7, pin11_6, pin10_5, pin9_4, pin7_3, pin6_2, pin5_1, pin4_0};\nassign pin13_busy = busy;\nassign pin14_done = done;\nassign pin15_out  = out;\n",
+            "code": "/*\n * 8-bit UART Transmitter\n *\n * Able to transmit 8 bits of serial data, one start bit, one stop bit\n *\n * When transmit is in progress over {out}, {busy} is driven high\n *\n * When transmit is complete, {done} is driven high for one tx clock cycle\n *\n * Capable of back-to-back transmits for full bandwidth utilization,\n *   by only changing the {in} data\n *   (*change before {done} rising edge)\n *\n * Finer control over when to start the next frame is provided by cycling\n *   the {start} input low then high\n *\n * System clock must be divided down to the baud rate, which is the\n *   {clk} input\n *\n * {TURBO_FRAMES}: performance mode versus forgiving mode:\n *\n * 0: forgiving mode:\n *    drive the mark state, aka stop bit, output high for two\n *    tx clock cycles instead of one - this way, the boundaries between\n *    data frames are distinguished in the transmitted data stream,\n *    for more robust sync between tx/rx\n *    (*sync can be re-established more quickly if it's lost)\n *    (*this mode will only have an effect in the max, back-to-back,\n *     frame transmission use case)\n *    (*this mode has no positive effect in an environment of\n *     reliably matched tx/rx baud clocks)\n *\n * 1: performance mode:\n *    drive the mark state output high for one cycle when at max rate\n *    (*this is the normal UART protocol: 80% effective data rate\n *     for 8 bits in a frame, no parity)\n */\n\n// states of state machine\n`define RESET     3'b000\n`define IDLE      3'b001\n`define START_BIT 3'b010\n`define DATA_BITS 3'b011\n`define STOP_BIT  3'b100\n\nlocalparam TURBO_FRAMES = 0;\n\nwire clk;\nwire en;\nwire start;\nwire [7:0] in;\nreg busy;\nreg done;\nreg out;\n\nreg [2:0] state     = `RESET;\nreg [7:0] in_data   = 8'b0; // shift reg for the data to transmit serially\nreg [2:0] bit_index = 3'b0; // index for 8-bit data\n\n/*\n * Disable at any time in the flow\n */\nalways @(posedge clk) begin\n    if (!en) begin\n        state <= `RESET;\n    end\nend\n\n/*\n * State machine\n */\nalways @(posedge clk) begin\n    case (state)\n        `RESET: begin\n            // state variables\n            bit_index <= 3'b0;\n            // outputs\n            busy      <= 1'b0;\n            done      <= 1'b0;\n            out       <= 1'b1; // drive the line high for IDLE state\n            // next state\n            if (en) begin\n                state <= `IDLE;\n            end\n        end\n\n        `IDLE: begin\n            if (start) begin\n                in_data <= in; // register the input data\n                state   <= `START_BIT;\n            end\n        end\n\n        `START_BIT: begin\n            bit_index <= 3'b0;\n            busy      <= 1'b1;\n            done      <= 1'b0;\n            out       <= 1'b0; // send the space output, aka start bit (low)\n            state     <= `DATA_BITS;\n        end\n\n        `DATA_BITS: begin // take 8 clock cycles for data bits to be sent\n            // grab each input bit using a shift register: the hardware\n            // realization is simple compared to routing the access\n            // dynamically, i.e. using in_data[bit_index]\n            in_data   <= { 1'b0, in_data[7:1] };\n            out       <= in_data[0];\n            // manage the state transition\n            bit_index <= bit_index + 3'b1;\n            if (&bit_index) begin\n                // bit_index wraps around to zero\n                state <= `STOP_BIT;\n            end\n        end\n\n        `STOP_BIT: begin\n            done              <= 1'b1; // signal the transmission stop\n            out               <= 1'b1; // transition to mark state output (high)\n            if (start) begin\n                if (done == 1'b0) begin // this distinguishes 2 sub-states\n                    in_data   <= in; // register new input data\n                    if (TURBO_FRAMES) begin\n                        state <= `START_BIT; // go direct to transmit\n                    end else begin\n                        state <= `STOP_BIT; // keep mark state one extra cycle\n                    end\n                end else begin // there was extra cycle within this state\n                    done      <= 1'b0;\n                    state     <= `START_BIT; // now go to transmit\n                end\n            end else begin\n                state         <= `RESET;\n            end\n        end\n\n        default: begin\n            state <= `RESET;\n        end\n    endcase\nend\n\nassign clk        = pin1_clk;\nassign en         = pin2_en;\nassign start      = pin3_start;\nassign in         = {pin11_7, pin10_6, pin9_5, pin8_4,\n                        pin7_3, pin6_2, pin5_1, pin4_0};\nassign pin12_busy = busy;\nassign pin13_done = done;\nassign pin14_out  = out;\n",
             "params": [],
             "ports": {
               "in": [
@@ -195,38 +209,38 @@
                   "name": "pin7_3"
                 },
                 {
-                  "name": "pin9_4"
+                  "name": "pin8_4"
                 },
                 {
-                  "name": "pin10_5"
+                  "name": "pin9_5"
                 },
                 {
-                  "name": "pin11_6"
+                  "name": "pin10_6"
                 },
                 {
-                  "name": "pin12_7"
+                  "name": "pin11_7"
                 }
               ],
               "out": [
                 {
-                  "name": "pin13_busy"
+                  "name": "pin12_busy"
                 },
                 {
-                  "name": "pin14_done"
+                  "name": "pin13_done"
                 },
                 {
-                  "name": "pin15_out"
+                  "name": "pin14_out"
                 }
               ]
             }
           },
           "position": {
             "x": 280,
-            "y": 8
+            "y": 0
           },
           "size": {
-            "width": 388,
-            "height": 760
+            "width": 636,
+            "height": 784
           }
         }
       ],
@@ -308,7 +322,7 @@
           },
           "target": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin9_4"
+            "port": "pin8_4"
           }
         },
         {
@@ -318,7 +332,7 @@
           },
           "target": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin10_5"
+            "port": "pin9_5"
           }
         },
         {
@@ -328,13 +342,13 @@
           },
           "target": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin11_6"
+            "port": "pin10_6"
           }
         },
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin13_busy"
+            "port": "pin12_busy"
           },
           "target": {
             "block": "aef86b17-5dea-4001-9cce-0fc7f1c58c33",
@@ -344,7 +358,7 @@
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin14_done"
+            "port": "pin13_done"
           },
           "target": {
             "block": "49ed377b-71f0-4d1b-a73b-62a59341ca8b",
@@ -358,13 +372,13 @@
           },
           "target": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin12_7"
+            "port": "pin11_7"
           }
         },
         {
           "source": {
             "block": "ba573190-2ead-411a-a323-1b15a22d46db",
-            "port": "pin15_out"
+            "port": "pin14_out"
           },
           "target": {
             "block": "c2df35e2-6b64-4b6b-b29b-9d66b6115158",
