@@ -17,32 +17,22 @@ localparam ENABLED_BAUD_CLOCK_STEPS = 17;
 
 reg        clk;
 reg        en_1;
-reg        en_2;
 reg        txStart_1;
-reg        txStart_2;
 wire       txBusy_1;
-wire       txBusy_2;
 wire       rxBusy_1;
-wire       rxBusy_2;
 wire       txDone_1;
-wire       txDone_2;
 wire       rxDone_1;
-wire       rxDone_2;
 wire       rxErr_1;
-wire       rxErr_2;
 reg [7:0]  txByte_1;
-reg [7:0]  txByte_2;
 wire [7:0] rxByte_1;
-wire [7:0] rxByte_2;
-wire       bus_wire_1_2;
-wire       bus_wire_2_1;
+wire       bus_wire;
 
 Uart8 #(.CLOCK_RATE(CLOCK_FREQ)) uart1(
   .clk(clk),
 
   // rx interface
-  .rxEn(en_2),
-  .rx(bus_wire_2_1),
+  .rxEn(en_1),
+  .rx(bus_wire),
   .rxBusy(rxBusy_1),
   .rxDone(rxDone_1),
   .rxErr(rxErr_1),
@@ -54,27 +44,7 @@ Uart8 #(.CLOCK_RATE(CLOCK_FREQ)) uart1(
   .in(txByte_1),
   .txBusy(txBusy_1),
   .txDone(txDone_1),
-  .tx(bus_wire_1_2)
-);
-
-Uart8 #(.CLOCK_RATE(CLOCK_FREQ)) uart2(
-  .clk(clk),
-
-  // rx interface
-  .rxEn(en_1),
-  .rx(bus_wire_1_2),
-  .rxBusy(rxBusy_2),
-  .rxDone(rxDone_2),
-  .rxErr(rxErr_2),
-  .out(rxByte_2),
-
-  // tx interface
-  .txEn(en_2),
-  .txStart(txStart_2),
-  .in(txByte_2),
-  .txBusy(txBusy_2),
-  .txDone(txDone_2),
-  .tx(bus_wire_2_1)
+  .tx(bus_wire)
 );
 
 initial clk = 1'b0;
@@ -95,7 +65,7 @@ initial begin
 
   txByte_1 = 8'b01000101;
 
-  $display("            tx 1 data: %8b", txByte_1);
+  $display("            tx data: %8b", txByte_1);
 
   for (t = 0; t < ENABLED_BAUD_CLOCK_STEPS; t++) begin
     // #1000 x 100ns == 0.1ms == 1 tx clock period (approximately) at 9600 baud
@@ -106,7 +76,7 @@ initial begin
 
         $display("%7.2fms | tx start: %d", $realtime/10000, txStart_1);
         $display("%7.2fms | tx busy: %d, tx done: %d", $realtime/10000, txBusy_1, txDone_1);
-        $display("%7.2fms | rx 2 data: %8b", $realtime/10000, rxByte_2);
+        $display("%7.2fms | rx data: %8b", $realtime/10000, rxByte_1);
       end
       4: begin
         txStart_1 = 1'b0;
@@ -117,7 +87,7 @@ initial begin
         // output is ready
 
         $display("%7.2fms | tx busy: %d, tx done: %d", $realtime/10000, txBusy_1, txDone_1);
-        $display("%7.2fms | rx 2 data: %8b", $realtime/10000, rxByte_2);
+        $display("%7.2fms | rx data: %8b", $realtime/10000, rxByte_1);
       end
     endcase
   end
