@@ -134,9 +134,12 @@ initial begin
   for (t = 0; t < ENABLED_BAUD_CLOCK_STEPS; t++) begin
 #1000
     case (t)
+      4: begin
+        $display("%7.2fms | tx start: %d", $realtime/10000, txStart_1);
+        $display("%7.2fms | rx done: %d", $realtime/10000, rxDone_2);
+        $display("%7.2fms | rx data: %8b", $realtime/10000, rxByte_2);
+      end
       5: begin
-        txStart_1 = 1'b0;
-
         $display("%7.2fms | tx start: %d", $realtime/10000, txStart_1);
         $display("%7.2fms | rx done: %d", $realtime/10000, rxDone_2);
         $display("%7.2fms | rx data: %8b", $realtime/10000, rxByte_2);

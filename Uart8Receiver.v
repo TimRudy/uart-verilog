@@ -260,8 +260,8 @@ always @(posedge clk) begin
             sample_count              <= sample_count + 4'b1;
             if (!err && !in_sample || &sample_count) begin
                 // check if this is the change to a start signal -
-                // in_sample has met the min high hold time
-                // any time it drops to low in this state
+                // note that in this state, in_sample has met the min high
+                // hold time any time it drops to low
                 // (also in these cases, namely !{err} or tick 15 special case,
                 //  signaling of {done} is in progress)
                 if (&sample_count) begin // reached 15, last tick, and no error
@@ -288,7 +288,7 @@ always @(posedge clk) begin
                     state             <= `IDLE;
                 end
             end else if (&sample_count[3:1]) begin // reached 14 -
-                // additional tick 15 comes from transitting the READY state
+                // additional tick 15 comes from transiting the READY state
                 // to get to the RESET state
                 if (err || !in_sample) begin
                     state             <= `RESET;

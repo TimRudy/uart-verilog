@@ -1,0 +1,43 @@
+[*]
+[*] GTKWave Analyzer v3.3.81 (w)1999-2017 BSI
+[*] Thu Feb 09 02:05:26 2023
+[*]
+[dumpfile] "1a.vcd"
+[dumpfile_mtime] "Thu Feb 09 02:04:09 2023"
+[dumpfile_size] 1227861
+[savefile] "1a.gtkw"
+[timestart] 0
+[size] 1536 937
+[pos] -9 -9
+*-18.545267 1555000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test.
+[treeopen] test.uart1.
+[sst_width] 197
+[signals_width] 210
+[sst_expanded] 1
+[sst_vpaned_height] 482
+@22
+test.uart1.txInst.in_data[7:0]
+@28
+test.uart1.txClk
+test.uart1.txEn
+test.uart1.txStart
+test.uart1.txBusy
+test.uart1.txDone
+test.uart1.txInst.bit_index[2:0]
+test.uart1.txInst.state[2:0]
+test.uart1.txInst.out
+test.uart1.rxClk
+test.uart1.rxEn
+test.uart1.rxBusy
+test.uart1.rxDone
+test.uart1.rxErr
+test.uart1.rxInst.in
+test.uart1.rxInst.in_sample
+test.uart1.rxInst.state[2:0]
+test.uart1.rxInst.bit_index[2:0]
+@22
+test.uart1.rxInst.received_data[7:0]
+test.uart1.rxInst.out[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
