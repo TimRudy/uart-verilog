@@ -123,6 +123,8 @@ Group 1 traces show the communication as an integrated whole:
 
 - Second transmission frame is shortened, but it's not enough to affect the result since it's during the output. Note when `rxEn` drops to `0`: It makes the `rxDone` pulse shorter than `rxDone` in the first frame, it makes the state `101` shorter, and makes the availability of the "`7F`" data shorter
 
+<br />
+
 ### #5 Correct data is read out for first frame, incorrect for second due to mismatch
 
 [5.v](5.v "Test bench 5.v")
@@ -130,6 +132,8 @@ Group 1 traces show the communication as an integrated whole:
 **Code Coverage Refs**
 
 `Uart8Receiver:` [`244 (*second frame)`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L244)
+
+<br />
 
 ### #6 Interrupted transmit followed by complete transmit
 
@@ -139,6 +143,8 @@ Group 1 traces show the communication as an integrated whole:
 
 `Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Transmitter.v#L84)
 
+<br />
+
 ### #7 Interrupted transmit followed by complete transmit ("txStart" overlaps)
 
 [7.v](7.v "Test bench 7.v")
@@ -146,6 +152,8 @@ Group 1 traces show the communication as an integrated whole:
 **Code Coverage Refs**
 
 `Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Transmitter.v#L84)
+
+<br />
 
 ### #8 Interrupted transmit followed by failed transmit ("txStart" too short)
 
@@ -204,13 +212,13 @@ Group 1 traces show the communication as an integrated whole:
 
 **Observations**
 
-- Unlike in #9 and #10, the second `in` data signal lags the transmitter's high-going done signal; thus at the moment of the high-going `txDone`, you can see the previous `in` value is re-captured in `in_data`
+- Unlike in #9 and #10, the second `in` data byte "`B1`" lags; at the moment of the high-going `txDone`, the previous `in` value is re-captured in `in_data`
 
 - Shows a third transmit starting, because `txStart` goes low too late at the end of second transmit
 
 - This test bench uses a feedback method of control to shut off `txStart`; so it's suggestive of ideas for external control of the UART; but these tests do not go into how you can use outputs for external control, and how to decide the timing of inputs
 
-- The test benches in general though rely on tuned timings to present the inputs according to the intent of the test - in other words, empirical or ad hoc timings. Examples to illustrate:
+- However the test benches in general rely on tuned timings to present the inputs according to the intent of the test - in other words, empirical or ad hoc timings. Examples to illustrate:
 
   - Interval `#11500` used in test [#13](#13-turbo_frames--0): Because each cycle is about 11.5ms, this gives prep or set-up times mid-way through each transmit for pushing each next byte (this is the `in` transitions relative to the `txDone` pulses)
   - Compare `#10750` used in test [#14](#13-turbo_frames--0), because its cycles are shorter
@@ -366,11 +374,11 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
   <summary>Some Verilog hints to understand the code</summary>
   <br />
 
-  - The "`&`" operator of `&in_prior_hold_reg` collects the bits, and the expression is true if all the bits are `1`; secondly, `in_prior_hold_reg` is a vector of size `4`, and is a shift register; this provides a connection to time passing: `4` ticks of the clock for it to fill up (say with `1`s)
+  The "`&`" operator of `&in_prior_hold_reg` collects the bits, and the expression is true if all the bits are `1`. Secondly, `in_prior_hold_reg` is a vector of size `4`, and is a shift register. This provides a connection to time passing: `4` ticks of the clock for it to fill up (say with `1`s).
 
-  - Ticks of the clock are implicitly being examined, and waited for, by this section of code: `4` ticks, `8` ticks, `12` ticks; `16` ticks is the nominal duration of an incoming bit being sampled; if you understand line [`152`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L152): `sample_count <= 4'b0100;` and how `sample_count` is being used cycling from `0` to `F`, then you've understood a lot of the code and the protocol, and how a Finite State Machine is useful
+  Ticks of the clock are implicitly being examined, and waited for, by this section of code: `4` ticks, `8` ticks, `12` ticks; `16` ticks is the nominal duration of an incoming bit being sampled. If you understand line [`152`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L152): `sample_count <= 4'b0100;` and how `sample_count` is being used cycling from `0` to `F`, then you've understood a lot of the code and the protocol, and how a Finite State Machine is useful.
 
-  - When `in_sample` drops to `0`, that's the trigger for recovering from the error: `in_prior_hold_reg` is losing its `1` bits and goes away from the `F` or `&in_prior_hold_reg` condition; `sample_count`, if it continues to increase, will allow moving from the `IDLE` state to `START_BIT` state
+  When `in_sample` drops to `0`, that's the trigger for recovering from the error: `in_prior_hold_reg` is losing its `1` bits and goes away from the `F` or `&in_prior_hold_reg` condition; `sample_count`, if it continues to increase, will allow moving from the `IDLE` state to `START_BIT` state.
 
   </details>
   <br />
@@ -399,7 +407,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Variant #18a**
 
-- Focuses on the high in `IDLE` state after a false start bit (start signal has gone high too early)
+- Focuses on the high in `IDLE` state after a false "start" bit (the signal has gone high too early)
 
 - `18a.v` line [`63`](https://github.com/TimRudy/uart-verilog/blob/a805332/tests/18a.v#L63 "Test bench changes at line 63"): Try `#230` for short, `#250` meets the minimum, `#300` long
 
@@ -433,7 +441,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Observations**
 
-- The reader can explore the implication of splitting `in_current_hold_reg` from `in_prior_hold_reg`; these are views into the register that stores the most recent `in` signal values/changes; the look-back allows for **signal hold time checks**
+- The reader can explore the implication of splitting `in_current_hold_reg` from `in_prior_hold_reg`; these are views into the register that stores the most recent `in` signal values/changes (and this look-back allows for **signal hold time checks**)
 
 **Variant #20a**
 
@@ -520,31 +528,91 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 [26.v](26.v "Test bench 26.v")
 
+**Code Coverage Refs**
+
+`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L79), [`158`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L158), [`220`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L215-L221)
+
+**Observations**
+
+- The `done` signal counts out to `16` as required
+
+- `err`, caused during the next transmit start, overlaps and actually ends before `done` ends
+
 <br />
 
 ### #27 Next transmit frame start overlaps with previous frame done signal
 
 [27.v](27.v "Test bench 27.v")
 
+**Code Coverage Refs**
+
+`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L237-L238), [`261`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L261), [`282`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L282)
+
+**Observations**
+
+- Shows going to the `READY` state, but only remaining in that state for a few clock ticks; whereupon the next frame starts
+
+- Despite the transition from `READY` to `IDLE` state, `done` is sustained for a `16`-tick cycle; this is implemented by moving the value in `sample_count` over to `out_hold_count` (line `287`)
+
+- At line [`287`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L287), the value assigned to `out_hold_count` tracks whatever `sample_count` has gone up to by that time - It does not use `sample_count <= 4'b1;` from the previous line, for the reason explained above about a value not changing till the end of a time slice in procedural block code
+
 **Variant #27a**
+
+<br />
 
 ### #28 Next transmit frame start overlaps with previous frame done signal 2
 
 [28.v](28.v "Test bench 28.v")
 
+**Code Coverage Refs**
+
+`Uart8Receiver:` [`274`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L274)
+
+**Observations**
+
+- Shows a complete `READY` state of exactly `16` ticks; whereupon the next frame starts
+
+- At the red marker when `sample_count` is `E`, nothing happens
+
+- In this particular case `in_sample` drops to `0` between `E` and `F`
+
+- When `sample_count` is `F`, the assignments after line [`274`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L274-L281) are what start the next frame, the `IDLE` state, the "start" bit hold count of `12` ticks
+
+- If you follow further, in the `IDLE` state, the condition at line `132` holds, the condition at line `133` does not hold, and so the counting continues in the branch at line `146`
+
+<br />
+
 ### #29 Successful transmit done signal overlaps with next transmit start error 2
 
 [29.v](29.v "Test bench 29.v")
 
+**Code Coverage Refs**
+
+`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L237-L238), [`261`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L261), [`282`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L282)
+
+**Observations**
+
+- Shows a `READY` state of exactly `1` tick, because `in_sample` drops to `0` at the same tick that `READY` state is entered
+
+- The `done` signal counts out to `16` as required
+
+- `err`, caused during the next transmit start, overlaps; the duration of `err` is unconstrained and it continues past the `done` signal
+
 **Variant #29a**
+
+<br />
 
 ### #30 Transmit fails, error state is continuous with next transmit start error
 
 [30.v](30.v "Test bench 30.v")
 
+**Code Coverage Refs**
+
+`Uart8Receiver:` [`290, 293`](https://github.com/TimRudy/uart-verilog/blob/a805332/Uart8Receiver.v#L290-L293)
+
 **Observations**
 
-- Shows err sustained high, no glitch low-high
+- Shows `err` sustained high; there is no glitch low-high (`RESET` state), given that the `busy` state signal continues high
 
 </details>
 
