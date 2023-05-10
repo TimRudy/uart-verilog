@@ -21,19 +21,26 @@ Mode 8-N-1 or 8-N-2 (8 bits data, no parity, 1 or 2 stop bits). The default 2 st
 ```
 TURBO_FRAMES = 0
 ```
-&ensp;&ensp;trades off maximum bandwidth against more reliable communication
 
-![Multiple module design of the UART](images/Uart3ChipScreenShot.png "Hierarchy of the design showing the Verilog modules: Transmitter, Receiver, Baud clock generator")
+#### Multi-module design of the UART
+<img src="images/Uart3ChipScreenShot.png" title="Hierarchy of the design showing the Verilog modules: Transmitter, Receiver, Baud clock generator" width="50%">
+
+<br />
 
 #### Test benches
 
-Functional.
+&ensp;&ensp;Direct to the [tests and traces](tests/#readme)
 
-&ensp;&ensp;Direct to [the tests](tests/)
+#### Example waveform
+<img src="tests/images/1-cr.png" title="Example simulation waveform" width="75%">
 
-Some text.
+<br />
 
 #### Running the tests on your machine
+
+<details>
+<summary>Run Icarus Verilog and GTKWave</summary>
+<br />
 
 The test benches can be run using the open source simulator Icarus Verilog: [Installation][link-iverilogi], [Getting Started][link-iverilogs].
 
@@ -53,13 +60,10 @@ I combine these:
 
 GTKWave viewer is used to view the trace (waveforms): [Installation][link-gtkwavei], [Getting Started][link-gtkwaves].
 
-With GTKWave installed, just click on the .vcd file. However, to persist the view (the duration window, amount of zoom and the particular signals) that you want to see for that test bench, save it as a .gtkw file. The .gtkw file persists and is a consistent view, whereas .vcd, the data, can be regenerated at will. Thus runs can be compared. (If you haven't changed the HDL code, the runs will come out identical.)
-
-<img src="tests/images/13.png" title="Simulation waveform" width="50%">
+</details>
+<br />
 
 #### Topics: Device and circuit simulation
-
-#### Related open source technology for device and circuit simulation:
 
 - [HDLs][link-web-hdls] · Hardware Description Languages
 - [EDA][link-web-eda] · Electronic Design Automation
