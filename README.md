@@ -61,7 +61,8 @@ Here's the representation of the UART in Icestudio as it's placed and wired - th
 
 &ensp;&ensp;[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code; lists tests that cover each
 
-&ensp;&ensp;The reverse index of the code coverage is what you'll see below: From each test, the code lines are linked and highlighted.
+&ensp;&ensp;The reverse index of the code coverage is what you'll see below: From each test, the code lines<br />
+&ensp;&ensp;are linked and highlighted.
 
 **Other notes:**
 
