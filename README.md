@@ -14,30 +14,36 @@ Full validation of the UART is described below in 30 tests.
 ## Parameters
 
 Select the rates:
-```
-CLOCK_RATE = 12000000
-```
-```
-BAUD_RATE = 115200
-```
+
+&ensp;&ensp;`CLOCK_RATE = 12000000`
+
+&ensp;&ensp;`BAUD_RATE = 115200`
+
 Select mode 8-N-1 or 8-N-2 (8 bits data, no parity, and 1 or 2 stop bits):
-```
-TURBO_FRAMES = 0   // The default 2 stop bits - more robust communication
-TURBO_FRAMES = 1   // 1 stop bit - higher max bandwidth
-```
+
+&ensp;&ensp;`TURBO_FRAMES = 0   // The default 2 stop bits - more robust communication`<br />
+&ensp;&ensp;`TURBO_FRAMES = 1   // 1 stop bit - higher max bandwidth`<br />
 
 ## Getting Started
 
-**The code:** See UART8.v and supporting .v files ([Uart8Transmitter.v](Uart8Transmitter.v), [Uart8Receiver.v](Uart8Receiver.v), [...](#top)).
+**The code:**
 
-**UART.ice block:** You can explore a hierarchical design workflow and plug this UART in your larger design:
-[![.ice icon](images/IceIcon.png) Download "`UART01-V`" device](../../releases/latest "Download UART01-V Icestudio device: releases/latest"). Then use Icestudio for virtual breadboarding (aka programming an FPGA). Screenshots below show this: It mixes graphical editing with Verilog. The editing/design environment allows you to load a hardware design onto an FPGA and be testing how the circuit functions in minutes.
+> See UART8.v and supporting .v files ([Uart8Transmitter.v](Uart8Transmitter.v), [Uart8Receiver.v](Uart8Receiver.v), [...](#top)).
 
-**Tests section**: The tests are meant to relate the visuals (zooming in on transmission waveform in a specific context) to the Verilog (line numbers in the code). Each different behaviour is described. Understand more about UART serial transmission, learn about the UART itself & how the code works, brush up on Verilog HDL. There are sidebars about interesting or educational details, that walk you into the Verilog.
+**UART.ice block:**
+
+> You can explore a hierarchical design workflow and plug this UART in your larger design:<br />
+> [![.ice icon](images/IceIcon.png) Download "UART01-V" device](../../releases/latest "Download UART01-V Icestudio device: releases/latest").<br />
+> Use this in Icestudio for virtual breadboarding (aka programming an FPGA). Screenshots below show the workflow: It mixes graphical editing with Verilog. The editing/design environment allows you to load a hardware design onto an FPGA and be testing how the circuit functions in minutes.
+
+**Tests section:**
+
+> The tests are meant to relate the visuals (waveform) to the Verilog (line numbers in the code). The screenshots zoom in on a transmission waveform in a specific example context. Each different behaviour is described.<br />
+> Understand more about UART serial transmission, learn about the UART itself & how the code works, brush up on Verilog HDL. There are sidebars about interesting or educational details, that walk you into the Verilog.
 
 ## Multi-module design of the UART
 
-The representation of the UART in Icestudio as it's placed and wired - the details inside are always expandable:
+Here's the representation of the UART in Icestudio as it's placed and wired - the details inside are always expandable:
 
 <img src="images/uart01_chip.svg" title="Outer view of the UART chip" width="12%">
 
@@ -51,13 +57,13 @@ The representation of the UART in Icestudio as it's placed and wired - the detai
 
 ## Tests
 
-**For reference**
+**For reference:**
 
-[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code; lists tests that cover each
+&ensp;&ensp;[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code; lists tests that cover each
 
-The reverse index of the code coverage is below: From each test the code lines are linked, and highlighted.
+&ensp;&ensp;The reverse index of the code coverage is what you'll see below: From each test, the code lines are linked and highlighted.
 
-**Other notes**
+**Other notes:**
 
 - Red marker in each test points to where the essential action is
 
