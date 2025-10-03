@@ -5,7 +5,7 @@
 
 8 bit UART with tests, documentation, timing diagrams
 
-    For simulation and Electronic Design Automation
+&ensp;&ensp;`For simulation and Electronic Design Automation`
 
 Consists of TX module and RX module. The two modules are also downloadable in an [Icestudio][link-icestudio] .ice block, pre-packaged.
 
@@ -30,7 +30,7 @@ TURBO_FRAMES = 1   // 1 stop bit - higher max bandwidth
 
 **The code:** See UART8.v and supporting .v files ([Uart8Transmitter.v](Uart8Transmitter.v), [Uart8Receiver.v](Uart8Receiver.v), [...](#top)).
 
-**UART.ice block:** You can explore a hierarchical design workflow and plug this UART in your larger design:  
+**UART.ice block:** You can explore a hierarchical design workflow and plug this UART in your larger design:
 [![.ice icon](images/IceIcon.png) Download "`UART01-V`" device](../../releases/latest "Download UART01-V Icestudio device: releases/latest"). Then use Icestudio for virtual breadboarding (aka programming an FPGA). Screenshots below show this: It mixes graphical editing with Verilog. The editing/design environment allows you to load a hardware design onto an FPGA and be testing how the circuit functions in minutes.
 
 **Tests section**: The tests are meant to relate the visuals (zooming in on transmission waveform in a specific context) to the Verilog (line numbers in the code). Each different behaviour is described. Understand more about UART serial transmission, learn about the UART itself & how the code works, brush up on Verilog HDL. There are sidebars about interesting or educational details, that walk you into the Verilog.
@@ -87,8 +87,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`127`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L127)  
-`Uart8Receiver:` [`133, 134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L132-L134), [`148`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L148), [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)  
+`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`127`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L127)
+`Uart8Receiver:` [`133, 134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L132-L134), [`148`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L148), [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)
 
 **Observations**
 
@@ -221,8 +221,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`120`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L120), [`123`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L123)  
-`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)  
+`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`120`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L120), [`123`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L123)
+`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)
 
 **Observations**
 
@@ -282,8 +282,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`118`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L118)  
-`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282)  
+`Uart8Transmitter:` [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`118`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L118)
+`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282)
 
 **Observations**
 
@@ -705,17 +705,23 @@ The test benches can be run using the open source simulator Icarus Verilog: [Ins
 
 With it installed, you can run a command like the following that specifies the required input files and one output file (.vvp):
 
-    > iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v
+```sh
+iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v
+```
 
 &ensp;&ensp;(This is run in the "tests" directory, and ".." thus references the device .v files or .vh files at root level.)
 
 It then requires a second step: Run the Icarus Verilog simulator/runtime to store all signal and timing data to a .vcd file (viewable signal trace):
 
-    > vvp simout.vvp
+```sh
+vvp simout.vvp
+```
 
 I combine these:
 
-    > iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && timeout 1 >NUL && vvp simout.vvp
+```sh
+iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && timeout 1 >NUL && vvp simout.vvp
+```
 
 Also, here's the complete batch that runs all tests: [RunAllTests.txt](tests/RunAllTests.txt).
 
