@@ -804,8 +804,8 @@ GTKWave viewer is used to view the trace (waveforms): [Installation][link-gtkwav
 [link-web-eda]: https://www.google.com/search?q=Electronic+Design+Automation
 [link-web-fpgas]: https://www.google.com/search?q=Field-Programmable+Gate+Arrays
 [link-yosys]: https://github.com/YosysHQ/yosys
-[link-iverilog]: http://iverilog.icarus.com
+[link-iverilog]: https://steveicarus.github.io/iverilog
 [link-iverilogi]: https://steveicarus.github.io/iverilog/usage/installation.html
 [link-iverilogs]: https://steveicarus.github.io/iverilog/usage/getting_started.html
-[link-gtkwavei]: http://gtkwave.sourceforge.net
+[link-gtkwavei]: https://gtkwave.sourceforge.net
 [link-gtkwaves]: https://gtkwave.sourceforge.net/gtkwave.pdf
