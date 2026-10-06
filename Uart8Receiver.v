@@ -63,17 +63,17 @@ end
 assign in_prior_hold_reg   = in_hold_reg[4:1];
 assign in_current_hold_reg = in_hold_reg[3:0];
 
-/*
- * End the validity of output data after precise time of one serial bit cycle:
- *
- * Output signals from this module might as well be consistent with input
- *   rate, which is the baud rate
- *
- * This hold is for the case when detection of a next transmit cut the
- *   prior stop and ready transitions short; i.e. IDLE state has been entered
- *   direct from STOP_BIT state or READY state
- */
 always @(posedge clk) begin
+    /*
+     * End the validity of output data after precise time of one serial bit cycle:
+     *
+     * Output signals from this module might as well be consistent with input
+     *   rate, which is the baud rate
+     *
+     * This hold is for the case when detection of a next transmit cut the
+     *   prior stop and ready transitions short; i.e. IDLE state has been entered
+     *   direct from STOP_BIT state or READY state
+     */
     if (|out_hold_count) begin
         out_hold_count     <= out_hold_count + 5'b1;
         if (out_hold_count == 5'b10000) begin // reached 16 -
@@ -83,21 +83,17 @@ always @(posedge clk) begin
             out            <= 8'b0;
         end
     end
-end
 
-/*
- * Disable at any time in the flow
- */
-always @(posedge clk) begin
+    /*
+     * Disable at any time in the flow
+     */
     if (!en) begin
         state <= `RESET;
     end
-end
 
-/*
- * State machine
- */
-always @(posedge clk) begin
+    /*
+     * State machine
+     */
     case (state)
         `RESET: begin
             // state variables

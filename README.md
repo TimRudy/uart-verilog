@@ -34,23 +34,27 @@ Select mode 8-N-1 or 8-N-2 (8 bits data, no parity, and 1 or 2 stop bits):
 
 > You can explore a hierarchical design workflow and plug this UART in your larger design:<br />
 > [![.ice icon](images/IceIcon.png) Download "UART01-V" device](../../releases/latest "Download UART01-V Icestudio device: releases/latest").<br />
+> <br />
 > Use this in Icestudio for virtual breadboarding (aka programming an FPGA). Screenshots below show the workflow: It mixes graphical editing with Verilog. The editing/design environment allows you to load a hardware design onto an FPGA and be testing how the circuit functions in minutes.
 
 **Tests section:**
 
-> The tests are meant to relate the visuals (waveform) to the Verilog (line numbers in the code). The screenshots zoom in on a transmission waveform in a specific example context. Each different behaviour is described.<br />
+> The tests are meant to relate the visuals (waveform) to the Verilog (line numbers in the code). The screenshots zoom in on a transmission waveform in a specific context. There the behaviour is described.<br />
+> <br />
 > Understand more about UART serial transmission, learn about the UART itself & how the code works, brush up on Verilog HDL. There are sidebars about interesting or educational details, that walk you into the Verilog.
 
 ## Multi-module design of the UART
 
-Here's the representation of the UART in Icestudio as it's placed and wired - the details inside are always expandable:
+The UART in Icestudio, ready to be placed and wired:
 
 <img src="images/uart01_chip.svg" title="Outer view of the UART chip" width="12%">
+
+It's expandable to see the details.
 
 ### Inside view
 <img src="images/Uart3ChipScreenShot.png" title="Hierarchy of the design showing the Verilog modules: Baud clock generator, Receiver, Transmitter" width="50%">
 
-### Inside view of one module
+### Inside view of one of the modules
 <img src="images/ReceiverScreenShot.png" title="Hierarchy of the design showing Receiver module" width="50%">
 
 <br />
@@ -59,9 +63,9 @@ Here's the representation of the UART in Icestudio as it's placed and wired - th
 
 **For reference:**
 
-&ensp;&ensp;[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code; lists tests that cover each
+&ensp;&ensp;[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code, and the tests that cover them
 
-&ensp;&ensp;The reverse index of the code coverage is what you'll see below: From each test, the code lines<br />
+&ensp;&ensp;The code coverage reverse index is below: From each test, the code lines<br />
 &ensp;&ensp;are linked and highlighted.
 
 **Other notes:**
@@ -94,8 +98,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`127`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L127)
-`Uart8Receiver:` [`133, 134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L132-L134), [`148`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L148), [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L82), [`125`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L125)
+`Uart8Receiver:` [`129, 130`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L128-L130), [`144`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L144), [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234), [`265`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L257-L265)
 
 **Observations**
 
@@ -113,9 +117,9 @@ Group 1 traces show the communication as an integrated whole:
 
     First, note signal `in` is shown at the top of tests [#4](#4--8) and following - not shown in this test. `in` is a wire by which the data, `45`, is presented to the transmitter. `in_data`, however, is a register accepting that data.
 
-    The bits are shifted through the register (`Uart8Transmitter` ref above, line [`102`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L99-L102)). When the lowest-order bit of the `5` is taken away and shifted out, what's left is `2`; the higher-order bits that form the `4` shift to follow, so what's left in that position is `2`.
+    The bits are shifted through the register (`Uart8Transmitter` ref above, line [`100`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L97-L100)). When the lowest-order bit of the `5` is taken away and shifted out, what's left is `2`; the higher-order bits that form the `4` shift to follow, so what's left in that position is `2`.
 
-    The `45` -> `22` -> `...` is just an implementation detail, but worth mentioning because the design choice does not help with understandability and transparency. Not many people will ever look at that value in `in_data`, but you are looking at it. So the reason it is shifted 8 times is that each bit is only needed once by the next stage in processing, the bits are needed in order, and that's it: They can be thrown away as the progression happens. The shift register mechanism is very practical, very no-frills for the purpose required (see comment at line [`102`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L99-L102)).
+    The `45` -> `22` -> `...` is just an implementation detail, but worth mentioning because the design choice does not help with understandability and transparency. Not many people will ever look at that value in `in_data`, but you are looking at it. So the reason it is shifted 8 times is that each bit is only needed once by the next stage in processing, the bits are needed in order, and that's it: They can be thrown away as the progression happens. The shift register mechanism is very practical, very no-frills for the purpose required (see comment at line [`100`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L97-L100)).
 
     `received_data` shows it has the same implementation. Given that the lowest bit comes first in the transmission sequence, the shift implementation dictates how it needs to work: the bit shows up in the highest bit position, following which it progressively moves into place!
 
@@ -165,7 +169,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`127`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L127)
+`Uart8Transmitter:` [`125`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L125)
 
 **Observations**
 
@@ -187,7 +191,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`244 (*for second frame)`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L244)
+`Uart8Receiver:` [`240 (*for second frame)`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L240)
 
 <br />
 
@@ -197,7 +201,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L82)
 
 <br />
 
@@ -207,7 +211,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L82)
 
 <br />
 
@@ -228,8 +232,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`84`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L84), [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`120`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L120), [`123`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L123)
-`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`269`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261-L269)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L82), [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L113-L114), [`118`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L118), [`121`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L121)
+`Uart8Receiver:` [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234), [`265`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L257-L265)
 
 **Observations**
 
@@ -289,8 +293,8 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`115, 116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L115-L116), [`118`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L118)
-`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282)
+`Uart8Transmitter:` [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L113-L114), [`116`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L116)
+`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`278`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L278)
 
 **Observations**
 
@@ -308,11 +312,11 @@ Group 1 traces show the communication as an integrated whole:
     <summary>Not 100% transparent Verilog implementation</summary>
     <br />
 
-    The [code](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L112-L130 "Transmitter code for `STOP_BIT` state: `TURBO_FRAMES`") for `STOP_BIT` state waits in that state for either `1` tick or `2` - but how, and why, is it using that `done` variable?
+    The [code](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L110-L128 "Transmitter code for `STOP_BIT` state: `TURBO_FRAMES`") for `STOP_BIT` state waits in that state for either `1` tick or `2` - but how, and why, is it using that `done` variable?
 
     You need to know the meaning of "`<=`", in context, in procedural block code.
 
-    Specifically, `done <= 1'b1;` appears to do something, but remember, its change to the value is not applied till the end of the time slice; consequently, the code after it `if (done == 1'b0)` is referring to the value at the current time *before* `done` is changed at all; so it is not a mistake!
+    Specifically, `done <= 1'b1;` appears to do something, but remember, its change to the value is not applied till the end of the time slice; consequently, the code after it `if (done == 1'b0)` is referring to the value at the current time **before** `done` is changed at all; so it is not a mistake!
 
     The code `done <= 1'b0;` in the same block is simply contradicting (overriding) the prior `done <= 1'b1;` which is (was) pending. ...So you see that that makes perfect sense as well!
 
@@ -334,7 +338,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`120`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L120), [`123`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L123)
+`Uart8Transmitter:` [`118`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L118), [`121`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Transmitter.v#L121)
 
 <br />
 
@@ -366,7 +370,7 @@ Group 1 traces show the communication as an integrated whole:
 
 - The bytes after it are all accounted for, synchronously, until byte "`7`" misses its deadline
 
-- This shows the virtue of limiting the length of bursts of data sent with this simple protocol; if each burst in this test were 8 bytes (frames), followed by driving the `txStart` signal low to go on to the next burst, then there would have been no data errors (*note this is an extreme example though - 9 bytes for the sync to go off)
+- This shows the virtue of limiting the length of bursts of data sent with this simple protocol; if each burst in this test were 8 bytes (frames), followed by driving the `txStart` signal low to go on to the next burst, then there would have been no data errors (*note this is an extreme example though: only 9 bytes for the sync to go off)
 
 - There is no `rxErr` signal for this scenario because there is no breach of the protocol
 
@@ -398,7 +402,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L132-L134)
+`Uart8Receiver:` [`130`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L128-L130)
 
 **Observations**
 
@@ -416,7 +420,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`141`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L141)
+`Uart8Receiver:` [`137`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L137)
 
 **Observations**
 
@@ -432,7 +436,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
   The "`&`" operator of "`&in_prior_hold_reg`" collects all the bits, and the expression is true if they're all `1`. Secondly, `in_prior_hold_reg` is a vector of size `4`, and is a shift register. So it provides a connection to time passing: `4` ticks of the clock for it to fill up (say with `1`s).
 
-  Ticks of the clock are implicitly being examined, and waited for, by this section of code: `4` ticks, `8` ticks, `12` ticks; and `16` ticks is the nominal duration of an incoming bit being sampled. If you understand line [`152`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L152): `sample_count <= 4'b0100;` and how `sample_count` is being used cycling from `0` to `F`, then you've understood a lot of the code and the protocol, and how a Finite State Machine is useful.
+  Ticks of the clock are implicitly being examined, and waited for, by this section of code: `4` ticks, `8` ticks, `12` ticks; and `16` ticks is the nominal duration of an incoming bit being sampled. If you understand line [`148`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L148): `sample_count <= 4'b0100;` and how `sample_count` is being used cycling from `0` to `F`, then you've understood a lot of the code and the protocol, and how a Finite State Machine is useful.
 
   When `in_sample` drops to `0`, that's the trigger for recovering from the error: `in_prior_hold_reg` is losing its `1` bits and goes away from the `F` or "`&in_prior_hold_reg`" condition; `sample_count`, if it continues to increase, will allow moving from the `IDLE` state to `START_BIT` state.
 
@@ -447,7 +451,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L134), [`158`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L158)
+`Uart8Receiver:` [`130`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L130), [`154`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L154)
 
 **Observations**
 
@@ -473,7 +477,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`158`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L158)
+`Uart8Receiver:` [`154`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L154)
 
 **Observations**
 
@@ -491,7 +495,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`215`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L215), [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238)
+`Uart8Receiver:` [`211`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L211), [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234)
 
 **Observations**
 
@@ -503,7 +507,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
   2. The stop bit signal doesn't have a defined length. That's because the start bit `0` following the stop bit `1` - "space" following "mark" - **defines** the start of a next frame. The code has to be able to respond to the drop to `0` ("`!in_sample`") from multiple locations, and this may lie within any of the 3 states: `STOP_BIT`, `READY` or `IDLE`.
 
-  3. Raising the "`done`" signal plus "`out`" signal - or alternatively an "`err`" signal - then sustaining the signal is the purpose of the `READY` state. But this timed functionality is actually decoupled from the state somewhat; that's because of the overlap of handling the start bit while simultaneously signaling (see line [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282-L289) for this - observe the use of a second counter).
+  3. Raising the "`done`" signal plus "`out`" signal - or alternatively an "`err`" signal - then sustaining the signal is the purpose of the `READY` state. But this timed functionality is actually decoupled from the state somewhat; that's because of the overlap of handling the start bit while simultaneously signaling (see line [`278`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L278-L285) for this - observe the use of a second counter).
 
 - The reader can explore the meaning of splitting `in_current_hold_reg` from `in_prior_hold_reg`
 
@@ -513,7 +517,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
     These "current"/"prior" variables are views into the register that stores the most recent `in` signal values/changes. Picture a shift register that keeps the 4 most recent values: This information is the look-back that allows for signal hold time checks, up to length 4.
 
-    Line [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L238) is the only place `in_current_hold_reg` is used.
+    Line [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L234) is the only place `in_current_hold_reg` is used.
 
     At the red marker on the trace: The logic decision for state transition can and should be made **at** the fourth tick, and the value seen by `in_current_hold_reg` is `F`; compare `in_prior_hold_reg`.
 
@@ -534,7 +538,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`215, 216`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L215-L216), [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238)
+`Uart8Receiver:` [`211, 212`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L211-L212), [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234)
 
 **Variant #21a**
 
@@ -548,7 +552,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`215, 216`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L215-L216), [`244`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L244)
+`Uart8Receiver:` [`211, 212`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L211-L212), [`240`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L240)
 
 **Variant #22a**
 
@@ -560,7 +564,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`228`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L228)
+`Uart8Receiver:` [`224`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L224)
 
 <br />
 
@@ -570,7 +574,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L132-L134), [`141`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L141)
+`Uart8Receiver:` [`130`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L128-L130), [`137`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L137)
 
 **Observations**
 
@@ -591,13 +595,13 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`220`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L215-L221)
+`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`216`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L211-L217)
 
 **Observations**
 
 - Shows `done` sustained for `16`-tick cycle, and this overlaps with the next frame start
 
-- Passes the condition at line [`134`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L134), immediately on entry to `IDLE` state
+- Passes the condition at line [`130`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L130), immediately on entry to `IDLE` state
 
 <br />
 
@@ -609,7 +613,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`158`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L158), [`220`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L215-L221)
+`Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L79), [`154`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L154), [`216`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L211-L217)
 
 **Observations**
 
@@ -625,15 +629,15 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`261`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261), [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282)
+`Uart8Receiver:` [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234), [`257`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L257), [`278`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L278)
 
 **Observations**
 
 - Shows going to the `READY` state, but only remaining in that state for a few clock ticks; whereupon the next frame starts
 
-- Despite the transition from `READY` to `IDLE` state, `done` is sustained for a `16`-tick cycle; this is implemented by moving the value in `sample_count` over to `out_hold_count` (line `287`)
+- Despite the transition from `READY` to `IDLE` state, `done` is sustained for a `16`-tick cycle; this is implemented by moving the value in `sample_count` over to `out_hold_count` (line `283`)
 
-- At line [`287`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L287), the value assigned to `out_hold_count` tracks whatever `sample_count` has gone up to by that time - It does not use `sample_count <= 4'b1;` from the previous line, for the reason explained above about a value not changing till the end of a time slice, in procedural block code
+- At line [`283`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L283), the value assigned to `out_hold_count` tracks whatever `sample_count` has gone up to by that time - It does not use `sample_count <= 4'b1;` from the previous line, for the reason explained above about a value not changing till the end of a time slice, in procedural block code
 
 **Variant #27a**
 
@@ -645,7 +649,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`274`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L274)
+`Uart8Receiver:` [`270`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L270)
 
 **Observations**
 
@@ -655,9 +659,9 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 - In this particular case `in_sample` drops to `0` between `E` and `F`
 
-- When `sample_count` is `F`, the assignments after line [`274`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L274-L281) are what start the next frame, and they start the `IDLE` state, and the "start" bit hold check of counting `12` ticks
+- When `sample_count` is `F`, the assignments after line [`270`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L270-L277) are what start the next frame, and they start the `IDLE` state, and the "start" bit hold check of counting `12` ticks
 
-- If you follow further: In the `IDLE` state, the condition at line `132` holds, the condition at line `133` does not hold, and so the counting continues in the branch at line `146`
+- If you follow further: In the `IDLE` state, the condition at line `128` holds, the condition at line `129` does not hold, and so the counting continues in the branch at line `142`
 
 - The logic fix for getting #28 working properly impacted some of the traces - the change was non-functional, only to an internal signal: a transit through `RESET` state was eliminated. Which I liked. This delta for test #1 shows this change, at `state` at the red marker: [1_cee44e1.png &larr;&rarr; 1.png](https://github.com/TimRudy/uart-verilog/compare/main...TimRudy:diff-test-1_cee44e1 "Compare: Logic fix at transition from `READY` to `IDLE`"). (Nice, right?!)
 
@@ -669,7 +673,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`238`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L237-L238), [`261`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L261), [`282`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L282)
+`Uart8Receiver:` [`234`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L233-L234), [`257`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L257), [`278`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L278)
 
 **Observations**
 
@@ -689,7 +693,7 @@ So, these tests are fine-grained in order to nail down the behaviour of the RX d
 
 **Code Coverage Refs**
 
-`Uart8Receiver:` [`290, 293`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L290-L293)
+`Uart8Receiver:` [`286, 289`](https://github.com/TimRudy/uart-verilog/blob/4a25276/Uart8Receiver.v#L286-L289)
 
 **Observations**
 
@@ -724,13 +728,15 @@ It then requires a second step: Run the Icarus Verilog simulator/runtime to stor
 vvp simout.vvp
 ```
 
-I combine these:
+I combine these*:
 
 ```sh
-iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && timeout 1 >NUL && vvp simout.vvp
+iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && sleep 1 && vvp simout.vvp
 ```
 
-Also, here's the complete batch that runs all tests: [RunAllTests.txt](tests/RunAllTests.txt).
+*Windows (Git Bash), Linux
+
+Also, here's the complete batch running all tests if needed: [RunAllTests.sh](tests/RunAllTests.sh).
 
 GTKWave viewer is used to view the trace (waveforms): [Installation][link-gtkwavei], [Getting Started][link-gtkwaves].
 

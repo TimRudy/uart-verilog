@@ -53,19 +53,17 @@ reg [2:0] state     = `RESET;
 reg [7:0] in_data   = 8'b0; // shift reg for the data to transmit serially
 reg [2:0] bit_index = 3'b0; // index for 8-bit data
 
-/*
- * Disable at any time in the flow
- */
 always @(posedge clk) begin
+    /*
+     * Disable at any time in the flow
+     */
     if (!en) begin
         state <= `RESET;
     end
-end
 
-/*
- * State machine
- */
-always @(posedge clk) begin
+    /*
+     * State machine
+     */
     case (state)
         `RESET: begin
             // state variables
