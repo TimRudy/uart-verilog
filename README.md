@@ -64,8 +64,7 @@ It's expandable to see the details.
 
 &ensp;&ensp;[`CodeCoverageIndex.md`](tests/CodeCoverageIndex.md "CodeCoverageIndex file") · Lists all the non-trivial `if-else` branches in the code, and the tests that cover them
 
-&ensp;&ensp;The code coverage reverse index is below: From each test, the code lines<br />
-&ensp;&ensp;are linked and highlighted.
+&ensp;&ensp;The code coverage reverse index is below: From each test, the code lines are linked and highlighted.
 
 **Other notes:**
 
@@ -99,7 +98,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L82), [`125`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L125)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L82), [`125`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L125)<br />
 `Uart8Receiver:` [`129, 130`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L128-L130), [`144`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L144), [`234`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L233-L234), [`265`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L257-L265)
 
 **Observations**
@@ -233,7 +232,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L82), [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L113-L114), [`118`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L118), [`121`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L121)
+`Uart8Transmitter:` [`82`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L82), [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L113-L114), [`118`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L118), [`121`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L121)<br />
 `Uart8Receiver:` [`234`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L233-L234), [`265`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L257-L265)
 
 **Observations**
@@ -294,7 +293,7 @@ Group 1 traces show the communication as an integrated whole:
 
 **Code Coverage Refs**
 
-`Uart8Transmitter:` [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L113-L114), [`116`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L116)
+`Uart8Transmitter:` [`113, 114`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L113-L114), [`116`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Transmitter.v#L116)<br />
 `Uart8Receiver:` [`79`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L79), [`278`](https://github.com/TimRudy/uart-verilog/blob/main/Uart8Receiver.v#L278)
 
 **Observations**
@@ -729,13 +728,13 @@ It then requires a second step: Run the Icarus Verilog simulator/runtime to stor
 vvp simout.vvp
 ```
 
-I combine these*:
+I combine these:
 
 ```sh
 iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && sleep 1 && vvp simout.vvp
 ```
 
-*Windows (Git Bash), Linux
+*For Linux, Windows (Git Bash)
 
 Also, here's the complete batch running all tests if needed: [RunAllTests.sh](tests/RunAllTests.sh).
 
