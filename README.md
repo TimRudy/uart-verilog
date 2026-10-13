@@ -734,7 +734,7 @@ I combine these:
 iverilog -g2012 -I.. -osimout.vvp -D"DUMP_FILE_NAME=\"1.vcd\"" 1.v && sleep 1 && vvp simout.vvp
 ```
 
-*For Linux, Windows (Git Bash)
+&ensp;&ensp;(For Linux and Git Bash on Windows)
 
 Also, here's the complete batch running all tests if needed: [RunAllTests.sh](tests/RunAllTests.sh).
 
